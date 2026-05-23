@@ -1,6 +1,6 @@
-# AGY DevTools - Offline Developer & Tester Suite
+export const readmeContent = `# Offline DevTools - Developer & Tester Suite
 
-AGY DevTools is a premium, offline-first, plug-and-play developer and tester tools application designed to run natively on macOS and Windows (compiled via Tauri) or as a lightweight, zero-dependency static folder opened in any browser offline.
+Offline DevTools is a premium, offline-first, plug-and-play developer and tester tools application designed to run natively on macOS and Windows (compiled via Tauri) or as a lightweight, zero-dependency static folder opened in any browser offline.
 
 This application provides all the critical tools developers and testers need daily without requiring internet browsing or leaking sensitive inputs to external networks.
 
@@ -14,8 +14,8 @@ All computations, conversions, beautifiers, and cryptographic keys are executed 
 ## 🚀 Key Platform Features
 
 *   **Integrated Onboarding (Welcome Guide)**: Automatic first-launch layout guide detailing shortcuts, tool capabilities, and operations.
-*   **Command Palette (`Cmd + K` / `Ctrl + K`)**: Keyboard-driven global search tool finder. Instantly search and navigate between all 53 tools.
-*   **Clipboard History Drawer (`Alt + V`)**: A system-wide sliding history panel that caches your last 30 generated outputs and copied clips offline in local storage, allowing manual scrapbook notes and fast inputs injections.
+*   **Command Palette (\`Cmd + K\` / \`Ctrl + K\`)**: Keyboard-driven global search tool finder. Instantly search and navigate between all 53 tools.
+*   **Clipboard History Drawer (\`Alt + V\`)**: A system-wide sliding history panel that caches your last 30 generated outputs and copied clips offline in local storage, allowing manual scrapbook notes and fast inputs injections.
 *   **Smart Clipboard Auto-Detector**: Listens to focus transitions and parses clipboard values. If valid JSON, UUIDs, Epochs, or Base64 is matched, a toast offers to instantly open the correct tool.
 *   **Unified UI Design System**: Beautiful glassmorphic UI styled with HSL variables supporting full high-contrast dark and light modes. Fully responsive using container query metrics.
 
@@ -31,7 +31,7 @@ All computations, conversions, beautifiers, and cryptographic keys are executed 
 *   **JSON to YAML / YAML to JSON**: Bi-directional object parser validating syntax configurations.
 *   **JSON to XML / XML to JSON**: Bi-directional conversion handling namespaces, attributes, and text nodes.
 *   **JSON to CSV / CSV to JSON**: Format tabular CSV datasets into structured JSON arrays.
-*   **CSV to SQL Insert Script**: Parse massive CSV spreadsheets into safe SQL `INSERT` commands.
+*   **CSV to SQL Insert Script**: Parse massive CSV spreadsheets into safe SQL \`INSERT\` commands.
 *   **URL Encoder & Decoder**: Safely encode/decode query string variables.
 *   **Color Space Converter**: Conversions across HEX, RGB, HSL, CMYK with a local interactive color picker.
 
@@ -40,7 +40,7 @@ All computations, conversions, beautifiers, and cryptographic keys are executed 
 *   **XML Formatter & Minifier**: Prettify XML nesting structures or strip tags spacing.
 *   **HTML Formatter & Minifier**: Clean nested HTML code tags or compress templates.
 *   **CSS Beautifier & Minifier**: Format messy CSS rulesets or compile stylesheets.
-*   **SQL Query Beautifier**: Standardize keyword casings (`SELECT`, `JOIN`, `WHERE`) across major SQL dialects.
+*   **SQL Query Beautifier**: Standardize keyword casings (\`SELECT\`, \`JOIN\`, \`WHERE\`) across major SQL dialects.
 *   **Markdown to HTML Previewer**: Dual-pane real-time markdown renderer.
 *   **JavaScript/TypeScript Minifier**: Fast client-side code minifier.
 
@@ -74,18 +74,18 @@ All computations, conversions, beautifiers, and cryptographic keys are executed 
 *   **HTTP Status Codes Reference**: Searchable spec sheet of standard HTTP response codes and rules.
 *   **IPv4 CIDR Subnet Calculator**: Calculate broadcast targets, wildcard masks, and total usable hosts.
 *   **User Agent Parser**: Read browser engines, device factors, and OS models from user-agent strings.
-*   **HTML Link Extractor**: Extract all anchor links (`href`) and source media (`src`) from HTML blocks.
+*   **HTML Link Extractor**: Extract all anchor links (\`href\`) and source media (\`src\`) from HTML blocks.
 *   **MIME Types Lookup**: Map file extensions directly to MIME content types.
 
 ### 6. Web Design & CSS Playgrounds
 *   **CSS Shadows & Border Radius**: Visual sliders to generate copyable box shadows and round corners.
 *   **CSS Flexbox & Grid Sandbox**: Visual containers layout designer.
-*   **HTML Accents Encoder**: Translate accented letters (e.g. `&eacute;`) into HTML safe codes.
-*   **Keyboard Event Monitor**: Display browser event parameters (`event.key`, `event.code`) in real time.
+*   **HTML Accents Encoder**: Translate accented letters (e.g. \`&eacute;\`) into HTML safe codes.
+*   **Keyboard Event Monitor**: Display browser event parameters (\`event.key\`, \`event.code\`) in real time.
 *   **Aspect Ratio Calculator**: Scaling coordinates and display fractions calculator.
 *   **SVG Optimizer**: Strip metadata tags and compress inline vector layouts.
 *   **Safe Web Font Stack Reference**: CSS declared system-safe font sets.
-*   **Glassmorphism CSS Styler**: Dashboard to design background blur, frost overlays, and opacity styles.
+*   **Glassmorphism CSS Styler**: Dashboard to design frosting, background blur, and opacity styles.
 
 ### 7. Core Platforms
 *   **Integrated Clipboard & Scrapbook Manager**: multi-functional scrapbook panel.
@@ -94,53 +94,7 @@ All computations, conversions, beautifiers, and cryptographic keys are executed 
 
 ## ⌨ Keyboard Shortcuts Reference
 
-*   `Cmd + K` or `Ctrl + K`: Open Global Search Command Palette.
-*   `Alt + V` or `Opt + V`: Toggle Sliding Clipboard History Drawer.
-*   `ESC`: Dismiss search modals or sliding drawers.
-
----
-
-## 🛠️ Development & Getting Started
-
-### 📋 Prerequisites
-- **Node.js**: v18.x or higher
-- **npm**: v9.x or higher
-
-### 📥 Installation
-Clone the repository and install the dependencies:
-```bash
-git clone https://github.com/SuhaasNandeesh/devtools.git
-cd devtools
-npm install
-```
-
-### ⚡ Local Development
-Start the local development server with hot-reloading:
-```bash
-npm run dev
-```
-Then navigate to the local URL (usually `http://localhost:5173`) in your browser.
-
-### 📦 Building for Offline Production
-To compile the entire application into a single, self-contained, zero-dependency HTML file:
-```bash
-npm run build
-```
-This outputs a compiled single-file `index.html` in the `dist/` directory using `vite-plugin-singlefile`. You can copy this file, double-click it to run it directly from your file system, or deploy it statically. It runs entirely offline without any external network requests.
-
-### 🧪 Running Tests
-To execute the unit and integration test suite:
-```bash
-npm run test
-# or with coverage / UI:
-npx vitest --ui
-```
-
----
-
-## 🏗️ Technical Architecture
-
-- **Core Framework**: React 19 & TypeScript.
-- **Styling System**: Vanilla CSS with interactive HSL-based palettes, responsive container queries, glassmorphism filters, and smooth micro-animations.
-- **Asset Integration**: Vite 8 & `vite-plugin-singlefile` to ensure absolute self-containment for the offline-first mandate.
-- **Icons**: Lucide React.
+*   \`Cmd + K\` or \`Ctrl + K\`: Open Global Search Command Palette.
+*   \`Alt + V\` or \`Opt + V\`: Toggle Sliding Clipboard History Drawer.
+*   \`ESC\`: Dismiss search modals or sliding drawers.
+`;
