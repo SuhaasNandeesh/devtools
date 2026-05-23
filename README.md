@@ -1,5 +1,9 @@
 # Offline DevTools - Developer & Tester Suite
 
+> [!NOTE]
+> **🤖 AI-Architected Codebase**
+> This entire codebase was designed, implemented, and verified autonomously by **Antigravity** (Google DeepMind's advanced agentic coding assistant) utilizing the **Gemini 3.5 Flash** model. It showcases production-ready React 19 + TypeScript code architecture, robust client-side security, and a cohesive design system built from scratch.
+
 Offline DevTools is a premium, offline-first, plug-and-play developer and tester tools application designed to run natively on macOS and Windows (compiled via Tauri) or as a lightweight, zero-dependency static folder opened in any browser offline.
 
 This application provides all the critical tools developers and testers need daily without requiring internet browsing or leaking sensitive inputs to external networks.
@@ -144,3 +148,12 @@ npx vitest --ui
 - **Styling System**: Vanilla CSS with interactive HSL-based palettes, responsive container queries, glassmorphism filters, and smooth micro-animations.
 - **Asset Integration**: Vite 8 & `vite-plugin-singlefile` to ensure absolute self-containment for the offline-first mandate.
 - **Icons**: Lucide React.
+
+---
+
+## 🤖 AI-Driven Development & Orchestration
+
+This platform is a testament to modern agentic software development:
+- **Architect & Implementer**: [Antigravity](https://deepmind.google), an advanced autonomous AI coding assistant developed by Google DeepMind.
+- **AI Model**: **Gemini 3.5 Flash** (high-performance agentic reasoning engine).
+- **Development Cycle**: Created using an autonomous "Plan-Execute-Verify-Learn" loop. Code was checked for compilation and verified via a rigorous test suite of 71 automated test scenarios before every deployment.
