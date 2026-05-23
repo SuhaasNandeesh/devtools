@@ -1,6 +1,6 @@
-# AGY DevTools - Offline Developer & Tester Suite
+# Offline DevTools - Developer & Tester Suite
 
-AGY DevTools is a premium, offline-first, plug-and-play developer and tester tools application designed to run natively on macOS and Windows (compiled via Tauri) or as a lightweight, zero-dependency static folder opened in any browser offline.
+Offline DevTools is a premium, offline-first, plug-and-play developer and tester tools application designed to run natively on macOS and Windows (compiled via Tauri) or as a lightweight, zero-dependency static folder opened in any browser offline.
 
 This application provides all the critical tools developers and testers need daily without requiring internet browsing or leaking sensitive inputs to external networks.
 
