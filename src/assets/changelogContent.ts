@@ -1,8 +1,12 @@
-export const CURRENT_VERSION = '1.5.1';
+export const CURRENT_VERSION = '1.5.2';
 
 export const changelogContent: Record<string, string> = {
+  '1.5.2': `
+## v1.5.2 (Latest Release) — Support Category Consolidation 📦
+*   **Feedback Categories Consolidation**: Consolidated the "Feature" and "Enhancement" categories into a single, unified "Enhancement" category. Because GitHub's default issues labeling maps both features and incremental refinements directly to the standard \`enhancement\` label, this eliminates visual redundancy in support pathways and prevents "No labels" query selection errors on GitHub.
+  `,
   '1.5.1': `
-## v1.5.1 (Latest Release) — GitHub Issue Label Mapping Fix 🏷️
+## v1.5.1 — GitHub Issue Label Mapping Fix 🏷️
 *   **GitHub Issue Label Sync**: Fixed a label mapping bug in the Feedback Hub where composing a "Feature" request auto-populated with an "enhancement" label on GitHub. Composing a "Feature" now correctly maps to the dedicated "feature" GitHub label, ensuring perfect category alignment.
   `,
   '1.5.0': `
@@ -63,6 +67,8 @@ export function getFullChangelogText(): string {
 
 Welcome to the offline release notes. Here you can explore recent feature additions, fixes, and updates.
 
+---
+${changelogContent['1.5.2']}
 ---
 ${changelogContent['1.5.1']}
 ---

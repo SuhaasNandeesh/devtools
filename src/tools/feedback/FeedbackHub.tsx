@@ -19,14 +19,14 @@ import {
 interface FeedbackDraft {
   id: string;
   title: string;
-  type: 'bug' | 'feature' | 'enhancement';
+  type: 'bug' | 'enhancement';
   description: string;
   timestamp: number;
 }
 
 export const FeedbackHub: React.FC = () => {
   const [title, setTitle] = useState('');
-  const [type, setType] = useState<'bug' | 'feature' | 'enhancement'>('bug');
+  const [type, setType] = useState<'bug' | 'enhancement'>('bug');
   const [description, setDescription] = useState('');
   const [drafts, setDrafts] = useState<FeedbackDraft[]>([]);
   const [activeDraftId, setActiveDraftId] = useState<string | null>(null);
@@ -137,8 +137,6 @@ export const FeedbackHub: React.FC = () => {
     const typeLabel =
       type === 'bug'
         ? '🐞 Bug Report'
-        : type === 'feature'
-        ? '🚀 Feature Request'
         : '✨ Enhancement';
 
     return `# ${typeLabel}: ${title.trim() || 'Untitled Feedback'}
@@ -192,7 +190,7 @@ ${description.trim() || '_No description provided._'}
     const mdBody = compileMarkdownReport();
 
     // Map labels based on types
-    const labels = type === 'bug' ? 'bug' : type === 'feature' ? 'feature' : 'enhancement';
+    const labels = type === 'bug' ? 'bug' : 'enhancement';
 
     const githubNewIssueUrl = `https://github.com/SuhaasNandeesh/devtools/issues/new?title=${encodeURIComponent(
       `[Offline Feedback] ${title.trim()}`
@@ -261,7 +259,7 @@ ${description.trim() || '_No description provided._'}
                 border: '1px solid var(--border-primary)'
               }}
             >
-              {(['bug', 'feature', 'enhancement'] as const).map((t) => (
+              {(['bug', 'enhancement'] as const).map((t) => (
                 <button
                   key={t}
                   type="button"
@@ -282,7 +280,7 @@ ${description.trim() || '_No description provided._'}
                     borderRadius: 'var(--radius-sm)'
                   }}
                 >
-                  {t === 'bug' ? '🐞 Bug' : t === 'feature' ? '🚀 Feature' : '✨ Enhancement'}
+                  {t === 'bug' ? '🐞 Bug' : '✨ Enhancement'}
                 </button>
               ))}
             </div>
@@ -340,9 +338,7 @@ ${description.trim() || '_No description provided._'}
               placeholder={
                 type === 'bug'
                   ? 'Steps to reproduce:\n1. Open X\n2. Do Y\n3. Observe Z\n\nExpected behavior vs actual behavior:'
-                  : type === 'feature'
-                  ? 'Describe the new tool or feature utility:\n- What would it do?\n- Why is it helpful offline?\n- Any reference websites/packages?'
-                  : 'Describe the proposed enhancements:\n- Which tool/UI component needs polishing?\n- How should it look/behave?'
+                  : 'Describe the proposed enhancements or new feature requests:\n- Which tool or component needs changes/additions?\n- What should it do?\n- Why is it helpful offline?\n- Any layout references?'
               }
               className="text-input w-full"
               style={{
@@ -574,12 +570,12 @@ ${description.trim() || '_No description provided._'}
                             padding: '1px 5px',
                             borderRadius: '3px',
                             textTransform: 'uppercase',
-                            background: d.type === 'bug' ? 'rgba(230, 80, 80, 0.15)' : d.type === 'feature' ? 'rgba(80, 180, 230, 0.15)' : 'rgba(80, 230, 180, 0.15)',
-                            color: d.type === 'bug' ? '#ff6b6b' : d.type === 'feature' ? '#4dabf7' : '#38d9a9',
-                            border: d.type === 'bug' ? '1px solid rgba(230, 80, 80, 0.2)' : d.type === 'feature' ? '1px solid rgba(80, 180, 230, 0.2)' : '1px solid rgba(80, 230, 180, 0.2)'
+                            background: d.type === 'bug' ? 'rgba(230, 80, 80, 0.15)' : 'rgba(80, 230, 180, 0.15)',
+                            color: d.type === 'bug' ? '#ff6b6b' : '#38d9a9',
+                            border: d.type === 'bug' ? '1px solid rgba(230, 80, 80, 0.2)' : '1px solid rgba(80, 230, 180, 0.2)'
                           }}
                         >
-                          {d.type === 'bug' ? 'Bug' : d.type === 'feature' ? 'Feature' : 'Enhance'}
+                          {d.type === 'bug' ? 'Bug' : 'Enhance'}
                         </span>
                         <span
                           style={{
