@@ -1,7 +1,7 @@
 import React from 'react';
 import { X, Rocket, Check } from 'lucide-react';
 import { MarkdownRenderer } from './MarkdownRenderer';
-import { changelogContent } from '../assets/changelogContent';
+import { getFullChangelogText } from '../assets/changelogContent';
 
 interface ChangelogModalProps {
   isOpen: boolean;
@@ -12,11 +12,7 @@ interface ChangelogModalProps {
 export const ChangelogModal: React.FC<ChangelogModalProps> = ({ isOpen, onClose, version }) => {
   if (!isOpen) return null;
 
-  const notes = changelogContent[version] || `
-# Release Notes - v${version}
-
-Enjoy using the offline DevTools suite! We regularly optimize and add new offline features.
-  `;
+  const notes = getFullChangelogText();
 
   const handleClose = () => {
     (window as any).playFeedbackSound?.('click');
