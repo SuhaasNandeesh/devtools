@@ -83,3 +83,34 @@ export function saveUpdateCheckCache(latestVersion: string, releaseUrl: string):
     console.error('Failed to save update check cache to localStorage:', err);
   }
 }
+
+/**
+ * Downloads the latest compiled single-file index.html directly from the GitHub repository.
+ * Triggers a browser-native file blob download.
+ */
+export async function downloadLatestReleaseText(): Promise<void> {
+  const url = 'https://raw.githubusercontent.com/SuhaasNandeesh/devtools/main/dist/index.html';
+  
+  const response = await fetch(url);
+  if (!response.ok) {
+    throw new Error(`Failed to fetch latest release asset: ${response.status}`);
+  }
+  
+  const htmlText = await response.text();
+  if (!htmlText || htmlText.length < 1000 || !htmlText.includes('<!DOCTYPE html>')) {
+    throw new Error('Downloaded asset does not appear to be a valid HTML bundle');
+  }
+  
+  const blob = new Blob([htmlText], { type: 'text/html' });
+  const blobUrl = URL.createObjectURL(blob);
+  
+  const link = document.createElement('a');
+  link.href = blobUrl;
+  link.download = 'devtools.html';
+  document.body.appendChild(link);
+  link.click();
+  
+  document.body.removeChild(link);
+  URL.revokeObjectURL(blobUrl);
+}
+
