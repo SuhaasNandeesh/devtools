@@ -961,6 +961,34 @@ export const App: React.FC = () => {
 
   // Favourites state
   const [favourites, setFavourites] = useState<string[]>(() => {
+    // One-time migration for v1.5.4 defaults integration
+    if (typeof localStorage !== 'undefined') {
+      const migrationKey = 'devtools_favourites_migration_v154';
+      const hasMigrated = localStorage.getItem(migrationKey);
+      if (!hasMigrated) {
+        const cached = localStorage.getItem('devtools_favourites');
+        if (cached !== null) {
+          try {
+            const parsed = JSON.parse(cached);
+            if (Array.isArray(parsed)) {
+              let updated = [...parsed];
+              if (!updated.includes('timezone-converter')) {
+                updated.push('timezone-converter');
+              }
+              if (!updated.includes('feedback-hub')) {
+                updated.push('feedback-hub');
+              }
+              const cleaned = ensureFeedbackHubAtBottom(updated);
+              localStorage.setItem('devtools_favourites', JSON.stringify(cleaned));
+            }
+          } catch {
+            // Safe fallback
+          }
+        }
+        localStorage.setItem(migrationKey, 'true');
+      }
+    }
+
     const cached = localStorage.getItem('devtools_favourites');
     if (cached !== null) {
       try {
