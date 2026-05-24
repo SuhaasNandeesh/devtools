@@ -21,7 +21,7 @@ All computations, conversions, beautifiers, and cryptographic keys are executed 
 *   **Command Palette (`Cmd + K` / `Ctrl + K`)**: Keyboard-driven global search tool finder. Instantly search and navigate between all 53 tools.
 *   **Clipboard History Drawer (`Alt + V`)**: A system-wide sliding history panel that caches your last 30 generated outputs and copied clips offline in local storage, allowing manual scrapbook notes and fast inputs injections.
 *   **Smart Clipboard Auto-Detector**: Listens to focus transitions and parses clipboard values. If valid JSON, UUIDs, Epochs, or Base64 is matched, a toast offers to instantly open the correct tool.
-*   **Update Sync & Offline Changelog**: Background GitHub Release sync (with 12-hour local caching and offline-first safety) that alerts you when a newer version is published. Features a stateful **One-Click Auto-Downloader** that streams the latest stable single-file bundle directly to your Downloads folder, and automatically prompts an offline-first markdown Changelog modal on the very first start after upgrading.
+*   **Update Sync & Offline Changelog**: Background GitHub Release sync (with sessionStorage caching and offline-first safety) that alerts you when a newer version is published. Features a stateful, **CORS-Resilient One-Click Downloader** streaming the latest stable single-file bundle directly to your Downloads folder bypassing browser \`file://\` sandboxing blocks, and automatically prompts an offline-first chronological Changelog modal on the very first start after upgrading.
 *   **Unified UI Design System**: Beautiful glassmorphic UI styled with HSL variables supporting full high-contrast dark and light modes. Fully responsive using container query metrics.
 
 ---

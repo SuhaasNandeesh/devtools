@@ -706,10 +706,32 @@ const DashboardHub: React.FC<{
               background: 'linear-gradient(45deg, var(--text-primary), var(--accent-primary))',
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
-              letterSpacing: '-0.03em'
+              letterSpacing: '-0.03em',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '10px'
             }}
           >
-            Welcome to DevTools
+            <span style={{ background: 'linear-gradient(45deg, var(--text-primary), var(--accent-primary))', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+              Welcome to DevTools
+            </span>
+            <span 
+              style={{
+                fontSize: '0.65rem',
+                fontWeight: 700,
+                background: 'var(--accent-glow)',
+                border: '1px solid var(--accent-primary)',
+                color: 'var(--accent-primary)',
+                padding: '2px 8px',
+                borderRadius: 'var(--radius-full)',
+                letterSpacing: '0.05em',
+                boxShadow: '0 0 10px var(--accent-glow)',
+                WebkitTextFillColor: 'var(--accent-primary)',
+                flexShrink: 0
+              }}
+            >
+              v{CURRENT_VERSION}
+            </span>
           </h1>
           <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>
             Airtight, local-origin developer utility framework. 100% Secure & Offline.
@@ -1609,25 +1631,40 @@ export const App: React.FC = () => {
         {/* Global Keyboard Help Footer */}
         {!sidebarCollapsed && (
           <div
-            className="flex items-center justify-between font-mono animate-fade"
+            className="flex flex-col font-mono animate-fade"
             style={{
               padding: 'var(--space-3)',
               borderTop: '1px solid var(--border-primary)',
               fontSize: '0.65rem',
-              color: 'var(--text-muted)'
+              color: 'var(--text-muted)',
+              gap: '4px'
             }}
           >
-            <div className="flex items-center gap-1">
-              {isMac ? (
-                <>
-                  <Command size={10} />
-                  <span>+K Search</span>
-                </>
-              ) : (
-                <span>Ctrl+K Search</span>
-              )}
+            <div className="flex items-center justify-between w-full">
+              <div className="flex items-center gap-1">
+                {isMac ? (
+                  <>
+                    <Command size={10} />
+                    <span>+K Search</span>
+                  </>
+                ) : (
+                  <span>Ctrl+K Search</span>
+                )}
+              </div>
+              <div>{isMac ? '⌥+V Clips' : 'Alt+V Clips'}</div>
             </div>
-            <div>{isMac ? '⌥+V Clips' : 'Alt+V Clips'}</div>
+            <div 
+              style={{ 
+                fontSize: '0.6rem', 
+                color: 'var(--text-muted)', 
+                opacity: 0.6,
+                textAlign: 'center', 
+                marginTop: '2px',
+                letterSpacing: '0.05em'
+              }}
+            >
+              DEVTOOLS v{CURRENT_VERSION}
+            </div>
           </div>
         )}
       </div>

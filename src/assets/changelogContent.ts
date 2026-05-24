@@ -1,8 +1,13 @@
-export const CURRENT_VERSION = '1.3.0';
+export const CURRENT_VERSION = '1.4.0';
 
 export const changelogContent: Record<string, string> = {
+  '1.4.0': `
+## v1.4.0 (Latest Release) — Resilient Downloader & UI Version HUDs 🛡️
+*   **CORS-Resilient Downloader**: Upgraded direct single-file downloading mechanics to leverage the GitHub Contents API. This completely bypasses standard browser \`file://\` sandboxing blocks, guaranteeing 100% download success directly from your local hard drive!
+*   **Interface Version HUDs**: Implemented dedicated version displays, including a glowing version badge in the Welcome home card and a subtle monospace version tracker at the bottom of the left sidebar footer.
+  `,
   '1.3.0': `
-## v1.3.0 (Latest Release) — Interface Cohesion & Brand Alignment 🎨
+## v1.3.0 — Interface Cohesion & Brand Alignment 🎨
 *   **Platform Branding Cohesion**: Updated the dashboard dashboard welcome panel and sidebar layouts to universally use the official name **DevTools** (retiring old "DevSuite" placeholders) for absolute visual cohesion.
 *   **One-Click Auto-Downloader**: Stream the latest compiled standalone \`devtools.html\` bundle directly to your browser's *Downloads* folder with a single click, bypassing the need to unzip or manually navigate GitHub.
 *   **Session-Based Checking**: Bypasses 12-hour throttling. The app now queries GitHub immediately on every fresh startup (on tab load) but safely caches responses in \`sessionStorage\` to avoid API rate limiting during active sessions.
@@ -39,6 +44,8 @@ export function getFullChangelogText(): string {
 
 Welcome to the offline release notes. Here you can explore recent feature additions, fixes, and updates.
 
+---
+${changelogContent['1.4.0']}
 ---
 ${changelogContent['1.3.0']}
 ---
