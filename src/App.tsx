@@ -709,7 +709,7 @@ const DashboardHub: React.FC<{
               letterSpacing: '-0.03em'
             }}
           >
-            Welcome to DevSuite
+            Welcome to DevTools
           </h1>
           <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>
             Airtight, local-origin developer utility framework. 100% Secure & Offline.
