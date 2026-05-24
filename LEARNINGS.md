@@ -100,6 +100,17 @@ This log documents crucial architectural pivots, engineering constraints, edge c
 *   **Resolution**: Implemented direct, explicit static imports of individual icons in `App.tsx` and mapped them to their corresponding tools through a type-safe static switcher helper function `getToolIcon(toolId: string)`. This approach provides optimal, fine-grained tree-shaking that only compiles the exactly used vector paths.
 *   **Result**: The compiled standalone single-file `dist/index.html` increased by only ~15kB (from 481kB to 496.63kB) for adding 42 distinct premium icons offline, well below our 500kB budget limit.
 
+---
+
+## 12. Client-Side Update Checker & Offline Changelog System (May 2026)
+*   **Problem**: Offline-first web applications distributed as a single double-clickable HTML bundle cannot dynamically download live code packages without an installer wrapper, making updates invisible to users.
+*   **Resolution**: 
+    1.  **Background Check**: Configured a delayed asynchronous `fetch` hook calling the public GitHub Releases API `https://api.github.com/repos/.../releases/latest` inside a delayed background timer.
+    2.  **12-Hour Cache Throttle**: Bypassed background queries when offline (`navigator.onLine === false`) or if the local cache is fresh, caching the latest tag and target HTML URL in `localStorage` for **12 hours** to fully respect API rate limits and conserve system resources.
+    3.  **Returning vs New User Filter**: Enabled semantic upgrades identification: if the stored version is older than `CURRENT_VERSION`, launch `ChangelogModal`. If `devtools_onboarding_seen` is null (first run), suppress the changelog modal to prevent stacked overlays and UX fatigue.
+    4.  **Premium Aesthetics & Accessibility**: Configured solid card background matching Material specifications for high readability, while highlights use absolute contrast margins.
+
+
 
 
 

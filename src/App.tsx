@@ -116,6 +116,13 @@ import { SvgOptimizer } from './tools/frontend/SvgOptimizer';
 import { WebFontStacks } from './tools/frontend/WebFontStacks';
 import { GlassmorphismStyler } from './tools/frontend/GlassmorphismStyler';
 
+// Update & Changelog components and utilities
+import { ChangelogModal } from './components/ChangelogModal';
+import { UpdateNotification } from './components/UpdateNotification';
+import { CURRENT_VERSION } from './assets/changelogContent';
+import { isNewerVersion, evaluateUpdateCheckSchedule, saveUpdateCheckCache } from './utils/version';
+
+
 interface ToolEntry {
   id: string;
   name: string;
@@ -924,6 +931,10 @@ export const App: React.FC = () => {
     return localStorage.getItem('devtools_onboarding_seen') === null;
   });
 
+  // Update checker and changelog states
+  const [changelogOpen, setChangelogOpen] = useState(false);
+  const [newVersionAvailable, setNewVersionAvailable] = useState<{ version: string; url: string } | null>(null);
+
   // Opt-in prompt dialog visibility
   const [showOptInPrompt, setShowOptInPrompt] = useState(() => {
     return localStorage.getItem('devtools_clip_opt_in') === null;
@@ -982,6 +993,77 @@ export const App: React.FC = () => {
       document.removeEventListener('mouseenter', handleMouseEnterWindow);
     };
   }, [showCursor]);
+
+  // First Start / Upgrade Changelog check
+  useEffect(() => {
+    if (typeof localStorage !== 'undefined') {
+      const onboardingSeen = localStorage.getItem('devtools_onboarding_seen') === 'true';
+      const lastInstalledVersion = localStorage.getItem('devtools_version');
+
+      // We only show the changelog to upgrading users (onboarding seen) to avoid double modals
+      if (onboardingSeen) {
+        if (lastInstalledVersion !== CURRENT_VERSION) {
+          // Returning user upgrading to a new version!
+          setChangelogOpen(true);
+        }
+      }
+      // Store/update version in localStorage
+      localStorage.setItem('devtools_version', CURRENT_VERSION);
+    }
+  }, []);
+
+  // Background GitHub Release Sync
+  useEffect(() => {
+    // Only check if system is online
+    if (typeof navigator !== 'undefined' && !navigator.onLine) {
+      return;
+    }
+
+    const runUpdateCheck = async () => {
+      const schedule = evaluateUpdateCheckSchedule();
+      
+      // If cached for 12 hours
+      if (!schedule.shouldCheck) {
+        if (schedule.cachedLatestVersion && schedule.cachedReleaseUrl) {
+          if (isNewerVersion(CURRENT_VERSION, schedule.cachedLatestVersion)) {
+            setNewVersionAvailable({
+              version: schedule.cachedLatestVersion,
+              url: schedule.cachedReleaseUrl
+            });
+          }
+        }
+        return;
+      }
+
+      // Check online repository release
+      try {
+        const response = await fetch('https://api.github.com/repos/SuhaasNandeesh/devtools/releases/latest');
+        if (!response.ok) {
+          throw new Error(`GitHub API response error: ${response.status}`);
+        }
+        const data = await response.json();
+        const latestTag = data.tag_name;
+        const htmlUrl = data.html_url;
+
+        if (latestTag && htmlUrl) {
+          saveUpdateCheckCache(latestTag, htmlUrl);
+
+          if (isNewerVersion(CURRENT_VERSION, latestTag)) {
+            setNewVersionAvailable({
+              version: latestTag,
+              url: htmlUrl
+            });
+          }
+        }
+      } catch (err) {
+        console.error('Failed to run update check:', err);
+      }
+    };
+
+    // Delay checking by 3 seconds to ensure instant initial UI mounting
+    const timer = setTimeout(runUpdateCheck, 3000);
+    return () => clearTimeout(timer);
+  }, []);
 
   const isTouchDevice = typeof window !== 'undefined' && ('ontouchstart' in window || navigator.maxTouchPoints > 0);
 
@@ -1736,6 +1818,22 @@ export const App: React.FC = () => {
           setOnboardingOpen(false);
         }}
       />
+
+      {/* Changelog Update Modal Overlay */}
+      <ChangelogModal
+        isOpen={changelogOpen}
+        onClose={() => setChangelogOpen(false)}
+        version={CURRENT_VERSION}
+      />
+
+      {/* Floating Update Notification Toast */}
+      {newVersionAvailable && (
+        <UpdateNotification
+          version={newVersionAvailable.version}
+          releaseUrl={newVersionAvailable.url}
+          onDismiss={() => setNewVersionAvailable(null)}
+        />
+      )}
 
       {/* 4. CMD+K COMMAND PALETTE SEARCH MODAL OVERLAY */}
       {commandPaletteOpen && (
