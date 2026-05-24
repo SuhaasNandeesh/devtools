@@ -1,8 +1,16 @@
-export const CURRENT_VERSION = '1.5.2';
+export const CURRENT_VERSION = '1.5.3';
 
 export const changelogContent: Record<string, string> = {
+  '1.5.3': `
+## v1.5.3 (Latest Release) — Dynamic Time Zone Converter 🌐
+*   **Dynamic Time Zone Converter**: Added a premium converters category tool for advanced offline timezone calculations and shifts.
+*   **Direct UTC to IST Pathway**: Easily convert UTC date-times straight to IST, complete with dynamic offset descriptions.
+*   **Live Ticking Global Clocks HUD**: Features real-time live ticking clocks for UTC, IST (highlighted), London Time (GMT/BST), and New York Time (EST/EDT) with one-click direct copy buttons.
+*   **DST-Aware Engine**: Employs native Intl API formats that handle daylight saving time shifts (such as GMT/BST shifts in London or EST/EDT shifts in New York) dynamically based on the exact parsed datetime.
+*   **Custom Datetime Picker**: Input custom date-times via standard picker calendar controls and toggle outputs between 12-hour and 24-hour configurations instantly.
+  `,
   '1.5.2': `
-## v1.5.2 (Latest Release) — Support Category Consolidation 📦
+## v1.5.2 — Support Category Consolidation 📦
 *   **Feedback Categories Consolidation**: Consolidated the "Feature" and "Enhancement" categories into a single, unified "Enhancement" category. Because GitHub's default issues labeling maps both features and incremental refinements directly to the standard \`enhancement\` label, this eliminates visual redundancy in support pathways and prevents "No labels" query selection errors on GitHub.
   `,
   '1.5.1': `
@@ -67,6 +75,8 @@ export function getFullChangelogText(): string {
 
 Welcome to the offline release notes. Here you can explore recent feature additions, fixes, and updates.
 
+---
+${changelogContent['1.5.3']}
 ---
 ${changelogContent['1.5.2']}
 ---

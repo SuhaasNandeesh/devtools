@@ -70,6 +70,7 @@ import { toggleFavouriteArray } from './utils/engines';
 import { EpochConverter } from './tools/converters/EpochConverter';
 import { RadixConverter } from './tools/converters/RadixConverter';
 import { Base64Converter } from './tools/converters/Base64Converter';
+import { TimeZoneConverter } from './tools/converters/TimeZoneConverter';
 import { JSONFormatter } from './tools/formatters/JSONFormatter';
 import { XmlFormatter } from './tools/formatters/XmlFormatter';
 import { HtmlFormatter } from './tools/formatters/HtmlFormatter';
@@ -140,6 +141,13 @@ const TOOLS_CATALOG: ToolEntry[] = [
     category: 'Converters',
     description: 'Convert seconds/milliseconds epochs to human dates and vice versa.',
     component: EpochConverter
+  },
+  {
+    id: 'timezone-converter',
+    name: 'Time Zone Converter',
+    category: 'Converters',
+    description: 'Convert UTC, IST, GMT/BST, and global timezones with live ticking dashboards.',
+    component: TimeZoneConverter
   },
   {
     id: 'radix-converter',
@@ -461,6 +469,8 @@ const TOOLS_CATALOG: ToolEntry[] = [
 const getToolIcon = (toolId: string): React.ComponentType<{ size?: number; style?: React.CSSProperties }> => {
   switch (toolId) {
     case 'epoch-converter':
+      return Clock;
+    case 'timezone-converter':
       return Clock;
     case 'radix-converter':
       return Binary;
