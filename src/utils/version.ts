@@ -2,7 +2,7 @@
  * Static compile timestamp representing when this bundle was built.
  * This is compared against the GitHub release publish time for hotfixes.
  */
-export const BUILD_TIME = '2026-05-24T12:00:00Z';
+export const BUILD_TIME = '2026-05-24T16:40:00Z';
 
 /**
  * Compares two semantic version strings (e.g. '1.10.0' and '1.2.0').
@@ -51,7 +51,13 @@ export function isHotfixAvailable(
   try {
     const curTime = Date.parse(currentBuildTime);
     const latTime = Date.parse(latestPublishedAt);
-    return !isNaN(curTime) && !isNaN(latTime) && latTime > curTime;
+    
+    // A hotfix represents a patch release published significantly later than the local build.
+    // A 30-minute grace period buffer prevents false positive hotfix notifications triggered
+    // during the active compilation/release publication latency window.
+    const HOTFIX_BUFFER_MS = 30 * 60 * 1000; // 30 minutes
+    
+    return !isNaN(curTime) && !isNaN(latTime) && latTime > (curTime + HOTFIX_BUFFER_MS);
   } catch {
     return false;
   }

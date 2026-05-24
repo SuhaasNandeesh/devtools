@@ -56,6 +56,16 @@ describe('Same-Version Hotfix Comparator', () => {
     expect(isHotfixAvailable('1.5.4', currentBuild, '1.5.4', equalPublished)).toBe(false);
   });
 
+  it('should return false if publish time is within the 30-minute grace period buffer to avoid false build-cycle triggers', () => {
+    const currentBuild = '2026-05-24T12:00:00Z';
+    const postBuildBuffer = '2026-05-24T12:15:00Z'; // 15 minutes later (within buffer)
+    const postBuildBufferEdge = '2026-05-24T12:30:00Z'; // exactly 30 minutes later (on boundary)
+    const postBuildBufferPass = '2026-05-24T12:31:00Z'; // 31 minutes later (outside buffer)
+    expect(isHotfixAvailable('1.5.4', currentBuild, '1.5.4', postBuildBuffer)).toBe(false);
+    expect(isHotfixAvailable('1.5.4', currentBuild, '1.5.4', postBuildBufferEdge)).toBe(false);
+    expect(isHotfixAvailable('1.5.4', currentBuild, '1.5.4', postBuildBufferPass)).toBe(true);
+  });
+
   it('should return false if versions are different', () => {
     const currentBuild = '2026-05-24T12:00:00Z';
     const latestPublished = '2026-05-24T14:30:00Z';
