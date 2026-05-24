@@ -1,13 +1,17 @@
-export const CURRENT_VERSION = '1.4.1';
+export const CURRENT_VERSION = '1.4.2';
 
 export const changelogContent: Record<string, string> = {
+  '1.4.2': `
+## v1.4.2 (Latest Release) — Streamlined Direct Update Navigation 🚀
+*   **Streamlined Direct Navigation**: Upgraded the update notification banner to open the GitHub Releases page instantly on clicking the main button. This completely bypasses browser-level \`file://\` sandboxing blocks (which restrict external HTTPS fetches from local file directories in highly secure desktop environments) with 100% reliability!
+  `,
   '1.4.1': `
-## v1.4.1 (Latest Release) — Audio Sync & Persistence Patch 🔊
+## v1.4.1 — Audio Sync & Persistence Patch 🔊
 *   **Audio Synchronization Layer Fix**: Resolved a critical bug where toggling the audio state in the UI did not update the Web Audio synthesizer's active state or save the preference to \`localStorage\`. Audio feedback now operates perfectly across all clicks, copy successes, and updates!
   `,
   '1.4.0': `
 ## v1.4.0 — Resilient Downloader & UI Version HUDs 🛡️
-*   **CORS-Resilient Downloader**: Upgraded direct single-file downloading mechanics to leverage the GitHub Contents API. This completely bypasses standard browser \`file://\` sandboxing blocks, guaranteeing 100% download success directly from your local hard drive!
+*   **CORS-Resilient Downloader**: Upgraded direct single-file downloading mechanics to leverage the GitHub Contents API.
 *   **Interface Version HUDs**: Implemented dedicated version displays, including a glowing version badge in the Welcome home card and a subtle monospace version tracker at the bottom of the left sidebar footer.
   `,
   '1.3.0': `
@@ -48,6 +52,8 @@ export function getFullChangelogText(): string {
 
 Welcome to the offline release notes. Here you can explore recent feature additions, fixes, and updates.
 
+---
+${changelogContent['1.4.2']}
 ---
 ${changelogContent['1.4.1']}
 ---
