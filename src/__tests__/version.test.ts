@@ -39,8 +39,8 @@ describe('Version Semver Comparator', () => {
   });
 });
 
-describe('Update Cache Schedule manager', () => {
-  const localStorageMock = (() => {
+describe('Update Session Cache Manager', () => {
+  const sessionStorageMock = (() => {
     let store: Record<string, string> = {};
     return {
       getItem: (key: string) => store[key] || null,
@@ -50,41 +50,25 @@ describe('Update Cache Schedule manager', () => {
   })();
 
   beforeEach(() => {
-    vi.stubGlobal('localStorage', localStorageMock);
-    localStorageMock.clear();
-    vi.useFakeTimers();
+    vi.stubGlobal('sessionStorage', sessionStorageMock);
+    sessionStorageMock.clear();
   });
 
   afterEach(() => {
     vi.unstubAllGlobals();
-    vi.useRealTimers();
   });
 
-  it('should trigger update check if no cache exists', () => {
+  it('should trigger update check if no session cache exists', () => {
     const result = evaluateUpdateCheckSchedule();
     expect(result.shouldCheck).toBe(true);
   });
 
-  it('should cache and throttles subsequent check requests within 12 hours', () => {
-    const now = Date.now();
-    vi.setSystemTime(now);
-
+  it('should read from session cache if checks are cached in the same session', () => {
     saveUpdateCheckCache('1.2.0', 'https://github.com/releases/1.2.0');
 
-    // Attempt checking immediately
-    const check1 = evaluateUpdateCheckSchedule();
-    expect(check1.shouldCheck).toBe(false);
-    expect(check1.cachedLatestVersion).toBe('1.2.0');
-    expect(check1.cachedReleaseUrl).toBe('https://github.com/releases/1.2.0');
-
-    // Advance time by 6 hours
-    vi.setSystemTime(now + 6 * 60 * 60 * 1000);
-    const check2 = evaluateUpdateCheckSchedule();
-    expect(check2.shouldCheck).toBe(false);
-
-    // Advance time by 13 hours (past 12 hours)
-    vi.setSystemTime(now + 13 * 60 * 60 * 1000);
-    const check3 = evaluateUpdateCheckSchedule();
-    expect(check3.shouldCheck).toBe(true);
+    const check = evaluateUpdateCheckSchedule();
+    expect(check.shouldCheck).toBe(false);
+    expect(check.cachedLatestVersion).toBe('1.2.0');
+    expect(check.cachedReleaseUrl).toBe('https://github.com/releases/1.2.0');
   });
 });

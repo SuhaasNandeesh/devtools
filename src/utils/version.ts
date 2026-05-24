@@ -28,8 +28,6 @@ export function isNewerVersion(current: string, latest: string): boolean {
   return false;
 }
 
-const H12_IN_MS = 12 * 60 * 60 * 1000;
-
 export interface UpdateCheckResult {
   shouldCheck: boolean;
   cachedLatestVersion?: string;
@@ -37,24 +35,20 @@ export interface UpdateCheckResult {
 }
 
 /**
- * Checks if the 12-hour throttling cache has expired and reads cached details.
+ * Checks if the session cache exists and reads cached details.
+ * Bypasses network calls if checked in the current browser session.
  */
 export function evaluateUpdateCheckSchedule(): UpdateCheckResult {
-  if (typeof window === 'undefined' || typeof localStorage === 'undefined') {
+  if (typeof window === 'undefined' || typeof sessionStorage === 'undefined') {
     return { shouldCheck: false };
   }
   
   try {
-    const lastCheckStr = localStorage.getItem('devtools_last_update_check');
-    const cachedLatest = localStorage.getItem('devtools_cached_latest_version');
-    const cachedUrl = localStorage.getItem('devtools_cached_release_url');
+    const sessionChecked = sessionStorage.getItem('devtools_session_checked');
+    const cachedLatest = sessionStorage.getItem('devtools_cached_latest_version');
+    const cachedUrl = sessionStorage.getItem('devtools_cached_release_url');
     
-    if (!lastCheckStr) {
-      return { shouldCheck: true };
-    }
-    
-    const lastCheck = parseInt(lastCheckStr, 10);
-    if (isNaN(lastCheck) || Date.now() - lastCheck > H12_IN_MS) {
+    if (sessionChecked !== 'true') {
       return { shouldCheck: true };
     }
     
@@ -64,25 +58,26 @@ export function evaluateUpdateCheckSchedule(): UpdateCheckResult {
       cachedReleaseUrl: cachedUrl || undefined
     };
   } catch (err) {
-    console.error('Failed to read update check cache from localStorage:', err);
+    console.error('Failed to read update check cache from sessionStorage:', err);
     return { shouldCheck: true }; // safe fallback
   }
 }
 
 /**
- * Stores the last update check timestamp and cached results into localStorage.
+ * Stores the session check indicator and cached results into sessionStorage.
  */
 export function saveUpdateCheckCache(latestVersion: string, releaseUrl: string): void {
-  if (typeof window === 'undefined' || typeof localStorage === 'undefined') return;
+  if (typeof window === 'undefined' || typeof sessionStorage === 'undefined') return;
   
   try {
-    localStorage.setItem('devtools_last_update_check', Date.now().toString());
-    localStorage.setItem('devtools_cached_latest_version', latestVersion);
-    localStorage.setItem('devtools_cached_release_url', releaseUrl);
+    sessionStorage.setItem('devtools_session_checked', 'true');
+    sessionStorage.setItem('devtools_cached_latest_version', latestVersion);
+    sessionStorage.setItem('devtools_cached_release_url', releaseUrl);
   } catch (err) {
-    console.error('Failed to save update check cache to localStorage:', err);
+    console.error('Failed to save update check cache to sessionStorage:', err);
   }
 }
+
 
 /**
  * Downloads the latest compiled single-file index.html directly from the GitHub repository.
