@@ -192,7 +192,7 @@ ${description.trim() || '_No description provided._'}
     const mdBody = compileMarkdownReport();
 
     // Map labels based on types
-    const labels = type === 'bug' ? 'bug' : type === 'feature' ? 'enhancement' : 'enhancement';
+    const labels = type === 'bug' ? 'bug' : type === 'feature' ? 'feature' : 'enhancement';
 
     const githubNewIssueUrl = `https://github.com/SuhaasNandeesh/devtools/issues/new?title=${encodeURIComponent(
       `[Offline Feedback] ${title.trim()}`

@@ -1,8 +1,12 @@
-export const CURRENT_VERSION = '1.5.0';
+export const CURRENT_VERSION = '1.5.1';
 
 export const changelogContent: Record<string, string> = {
+  '1.5.1': `
+## v1.5.1 (Latest Release) — GitHub Issue Label Mapping Fix 🏷️
+*   **GitHub Issue Label Sync**: Fixed a label mapping bug in the Feedback Hub where composing a "Feature" request auto-populated with an "enhancement" label on GitHub. Composing a "Feature" now correctly maps to the dedicated "feature" GitHub label, ensuring perfect category alignment.
+  `,
   '1.5.0': `
-## v1.5.0 (Latest Release) — Offline Feedback & Issue Hub 💬
+## v1.5.0 — Offline Feedback & Issue Hub 💬
 *   **Offline Feedback Hub**: Added a premium Support category tool allowing you to draft bug reports, enhancement requests, or feature proposals.
 *   **Secure Drafts Locker**: Safely draft and store reports inside browser-level \`localStorage\` to ensure total client-side privacy.
 *   **Markdown Exporter**: Instantly package your feedback as structured, diagnostic-enriched Markdown (\`.md\`) files downloaded directly.
@@ -59,6 +63,8 @@ export function getFullChangelogText(): string {
 
 Welcome to the offline release notes. Here you can explore recent feature additions, fixes, and updates.
 
+---
+${changelogContent['1.5.1']}
 ---
 ${changelogContent['1.5.0']}
 ---
