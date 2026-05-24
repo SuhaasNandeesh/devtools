@@ -7,6 +7,8 @@ import { OnboardingModal } from './components/OnboardingModal';
 import {
   ChevronLeft,
   ChevronRight,
+  ChevronUp,
+  ChevronDown,
   Sun,
   Moon,
   Volume2,
@@ -64,7 +66,11 @@ import {
   MessageSquare
 } from 'lucide-react';
 
-import { toggleFavouriteArray } from './utils/engines';
+import {
+  toggleFavouriteArray,
+  ensureFeedbackHubAtBottom,
+  reorderFavourites
+} from './utils/engines';
 
 // Tool Components
 import { EpochConverter } from './tools/converters/EpochConverter';
@@ -958,12 +964,15 @@ export const App: React.FC = () => {
     const cached = localStorage.getItem('devtools_favourites');
     if (cached !== null) {
       try {
-        return JSON.parse(cached);
+        const parsed = JSON.parse(cached);
+        if (Array.isArray(parsed)) {
+          return ensureFeedbackHubAtBottom(parsed);
+        }
       } catch {
         // Fallback
       }
     }
-    return ['base64-converter', 'uuid-generator', 'comment-stripper', 'xml-formatter', 'password-generator'];
+    return ['base64-converter', 'uuid-generator', 'comment-stripper', 'xml-formatter', 'password-generator', 'timezone-converter', 'feedback-hub'];
   });
 
   const toggleFavourite = (toolId: string, e?: React.MouseEvent) => {
@@ -972,6 +981,17 @@ export const App: React.FC = () => {
     }
     setFavourites((prev) => {
       const next = toggleFavouriteArray(prev, toolId);
+      const cleaned = ensureFeedbackHubAtBottom(next);
+      localStorage.setItem('devtools_favourites', JSON.stringify(cleaned));
+      return cleaned;
+    });
+  };
+
+  const moveFavourite = (toolId: string, direction: 'up' | 'down', e: React.MouseEvent) => {
+    e.stopPropagation();
+    (window as any).playFeedbackSound?.('click');
+    setFavourites((prev) => {
+      const next = reorderFavourites(prev, toolId, direction);
       localStorage.setItem('devtools_favourites', JSON.stringify(next));
       return next;
     });
@@ -1490,21 +1510,78 @@ export const App: React.FC = () => {
                       {!sidebarCollapsed && <span style={{ fontSize: '0.8rem', fontWeight: 600, wordBreak: 'break-word', whiteSpace: 'normal' }} className="animate-fade">{tool.name}</span>}
                     </div>
                     {!sidebarCollapsed && (
-                      <button
-                        onClick={(e) => toggleFavourite(tool.id, e)}
-                        style={{
-                          background: 'none',
-                          border: 'none',
-                          padding: 0,
-                          cursor: 'pointer',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          color: 'var(--accent-primary)'
+                      <div 
+                        style={{ 
+                          display: 'flex', 
+                          alignItems: 'center', 
+                          gap: '6px',
+                          marginLeft: 'var(--space-2)',
+                          flexShrink: 0
                         }}
                       >
-                        <Star size={12} style={{ fill: 'var(--accent-primary)' }} />
-                      </button>
+                        {tool.id !== 'feedback-hub' && (
+                          <div style={{ display: 'flex', gap: '2px' }}>
+                            <button
+                              onClick={(e) => moveFavourite(tool.id, 'up', e)}
+                              disabled={favourites.indexOf(tool.id) === 0}
+                              style={{
+                                background: 'transparent',
+                                border: 'none',
+                                padding: '2px',
+                                cursor: favourites.indexOf(tool.id) === 0 ? 'not-allowed' : 'pointer',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                color: favourites.indexOf(tool.id) === 0 ? 'var(--text-muted)' : 'var(--text-secondary)',
+                                opacity: favourites.indexOf(tool.id) === 0 ? 0.3 : 0.7,
+                                transition: 'opacity 0.2s, color 0.2s'
+                              }}
+                              title="Move Up"
+                            >
+                              <ChevronUp size={12} />
+                            </button>
+                            <button
+                              onClick={(e) => moveFavourite(tool.id, 'down', e)}
+                              disabled={
+                                favourites.indexOf(tool.id) === favourites.length - 1 ||
+                                favourites[favourites.indexOf(tool.id) + 1] === 'feedback-hub'
+                              }
+                              style={{
+                                background: 'transparent',
+                                border: 'none',
+                                padding: '2px',
+                                cursor: (favourites.indexOf(tool.id) === favourites.length - 1 || favourites[favourites.indexOf(tool.id) + 1] === 'feedback-hub') ? 'not-allowed' : 'pointer',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                color: (favourites.indexOf(tool.id) === favourites.length - 1 || favourites[favourites.indexOf(tool.id) + 1] === 'feedback-hub') ? 'var(--text-muted)' : 'var(--text-secondary)',
+                                opacity: (favourites.indexOf(tool.id) === favourites.length - 1 || favourites[favourites.indexOf(tool.id) + 1] === 'feedback-hub') ? 0.3 : 0.7,
+                                transition: 'opacity 0.2s, color 0.2s'
+                              }}
+                              title="Move Down"
+                            >
+                              <ChevronDown size={12} />
+                            </button>
+                          </div>
+                        )}
+                        <button
+                          onClick={(e) => toggleFavourite(tool.id, e)}
+                          style={{
+                            background: 'none',
+                            border: 'none',
+                            padding: 0,
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            color: 'var(--accent-primary)',
+                            opacity: 0.9
+                          }}
+                          title="Remove from Favourites"
+                        >
+                          <Star size={12} style={{ fill: 'var(--accent-primary)' }} />
+                        </button>
+                      </div>
                     )}
                   </button>
                 );

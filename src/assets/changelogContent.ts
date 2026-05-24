@@ -1,8 +1,15 @@
-export const CURRENT_VERSION = '1.5.3';
+export const CURRENT_VERSION = '1.5.4';
 
 export const changelogContent: Record<string, string> = {
+  '1.5.4': `
+## v1.5.4 (Latest Release) — Interactive Sidebar Favourites Reordering 🌟
+*   **Dynamic Favourites Reordering**: You can now reorder your sidebar favourites dynamically using new Move Up/Move Down glassmorphic chevron buttons next to each favorite item (when the sidebar is expanded).
+*   **Bottom-Pinned Feedback Hub**: As requested, the Feedback & Support Hub favorite is permanently pinned to the very bottom of the favourites list, keeping support always easy to find. It does not have reordering controls, and other favourites cannot move below it.
+*   **Enriched Default Favourites**: The default favourites list on first startup is now updated to include **7 tools** instead of 5, adding both the *Time Zone Converter* and the *Feedback & Support Hub* by default.
+*   **Event-Bubble Isolation**: Fully blocks event bubbling when clicking up/down/star buttons, preventing the workspace from switching active tool screens while rearranging.
+  `,
   '1.5.3': `
-## v1.5.3 (Latest Release) — Dynamic Time Zone Converter 🌐
+## v1.5.3 — Dynamic Time Zone Converter 🌐
 *   **Dynamic Time Zone Converter**: Added a premium converters category tool for advanced offline timezone calculations and shifts.
 *   **Direct UTC to IST Pathway**: Easily convert UTC date-times straight to IST, complete with dynamic offset descriptions.
 *   **Live Ticking Global Clocks HUD**: Features real-time live ticking clocks for UTC, IST (highlighted), London Time (GMT/BST), and New York Time (EST/EDT) with one-click direct copy buttons.
@@ -75,6 +82,8 @@ export function getFullChangelogText(): string {
 
 Welcome to the offline release notes. Here you can explore recent feature additions, fixes, and updates.
 
+---
+${changelogContent['1.5.4']}
 ---
 ${changelogContent['1.5.3']}
 ---

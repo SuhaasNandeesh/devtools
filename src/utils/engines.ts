@@ -2375,6 +2375,37 @@ export const toggleFavouriteArray = (current: string[], toolId: string): string[
   return current.includes(toolId) ? current.filter(id => id !== toolId) : [...current, toolId];
 };
 
+// 47. Pin Feedback Hub to bottom helper
+export const ensureFeedbackHubAtBottom = (favs: string[]): string[] => {
+  if (favs.includes('feedback-hub')) {
+    return [...favs.filter(id => id !== 'feedback-hub'), 'feedback-hub'];
+  }
+  return favs;
+};
+
+// 48. Pure Favourites Reordering swap helper
+export const reorderFavourites = (
+  favs: string[],
+  toolId: string,
+  direction: 'up' | 'down'
+): string[] => {
+  const idx = favs.indexOf(toolId);
+  if (idx === -1) return favs;
+  
+  const next = [...favs];
+  if (direction === 'up' && idx > 0) {
+    const temp = next[idx];
+    next[idx] = next[idx - 1];
+    next[idx - 1] = temp;
+  } else if (direction === 'down' && idx < next.length - 1 && next[idx + 1] !== 'feedback-hub') {
+    const temp = next[idx];
+    next[idx] = next[idx + 1];
+    next[idx + 1] = temp;
+  }
+  
+  return ensureFeedbackHubAtBottom(next);
+};
+
 
 
 

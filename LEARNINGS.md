@@ -137,3 +137,13 @@ This log documents crucial architectural pivots, engineering constraints, edge c
     4.  **Source & Tag Version Control**: Stage all items, commit (`git commit -m ...`), push to `main` branch on remote, tag the new release (`git tag vX.Y.Z`), and push the tag to origin (`git push origin vX.Y.Z`).
     5.  **GitHub REST API Release Compiler**: Execute a Node.js compiler script (`node scratch/publish_vX_Y_Z.js`) that uses the secure GitHub Personal Access Token to programmatically call the GitHub Releases endpoint (`POST /repos/SuhaasNandeesh/devtools/releases`), create the release details with markdown notes, and stream upload the zip file directly to the release's `upload_url`.
     6.  **Zero Trust Sanitization**: Immediately overwrite the publishing script on disk with a sanitized security placeholder to prevent active API credentials from lingering in cleartext.
+
+---
+
+## 15. Dynamic Favourites Reordering & Locked Bottom Pinning (May 2026)
+*   **Problem**: Implementing dynamic list reordering controls (Up/Down buttons) in the sidebar favorites section without introducing complex external drag-and-drop libraries (which would bloat the single-file HTML bundle size) and guaranteeing that a specific item (`feedback-hub`) remains locked at the very bottom index at all times without its own reordering controls.
+*   **Resolution**:
+    1.  **Pure Stateless Reordering Helpers**: Formulated `ensureFeedbackHubAtBottom(favs)` and `reorderFavourites(favs, toolId, direction)` inside `engines.ts`. Keeping the logic stateless makes it highly cohesive, loosely coupled, and simple to unit-test with 100% code coverage.
+    2.  **Locked Swap Mechanics**: The pure `reorderFavourites` function blocks moving an item down if the successor is `'feedback-hub'`, and prevents moving the top-most item up.
+    3.  **Active UI Navigation Protection**: Wrapped ChevronUp/Down and Star buttons with `e.stopPropagation()` in click handlers. This isolates list rearrangement from the parent card's `onClick` routing handler, preventing workspace navigation during reordering.
+    4.  **Automatic State Alignment**: Invoked `ensureFeedbackHubAtBottom` inside the cached state initializers, additions, removals, and reordering cycles, keeping local state and `localStorage` in perfect sync.

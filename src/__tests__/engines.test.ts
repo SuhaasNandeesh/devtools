@@ -716,13 +716,15 @@ describe('Favourites Toggle Array Helper', () => {
 });
 
 describe('Default Favourites Set', () => {
-  it('should have the exact 5 tools requested by the user in defaults', () => {
-    const defaults = ['base64-converter', 'uuid-generator', 'comment-stripper', 'xml-formatter', 'password-generator'];
+  it('should have the exact 7 tools in defaults', () => {
+    const defaults = ['base64-converter', 'uuid-generator', 'comment-stripper', 'xml-formatter', 'password-generator', 'timezone-converter', 'feedback-hub'];
     expect(defaults).toContain('base64-converter');
     expect(defaults).toContain('uuid-generator');
     expect(defaults).toContain('comment-stripper');
     expect(defaults).toContain('xml-formatter');
     expect(defaults).toContain('password-generator');
-    expect(defaults).toHaveLength(5);
+    expect(defaults).toContain('timezone-converter');
+    expect(defaults).toContain('feedback-hub');
+    expect(defaults).toHaveLength(7);
   });
 });
