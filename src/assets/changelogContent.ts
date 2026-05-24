@@ -1,8 +1,15 @@
-export const CURRENT_VERSION = '1.5.4';
+export const CURRENT_VERSION = '1.5.5';
 
 export const changelogContent: Record<string, string> = {
+  '1.5.5': `
+## v1.5.5 (Latest Release) — Same-Version Hotfix Notifications 🚀
+*   **Same-Version Hotfix Notifications**: You will now be automatically notified of newer hotfix releases even when the version numbers match. The update checker dynamically compares your local compile timestamp with the latest online published release timestamp.
+*   **Specialized Hotfix Toast**: Renders a dedicated hotfix toast ("New DevTools Hotfix Available!") detailing that a newer hotfix revision has been published on GitHub.
+*   **Session-Safe published_at Cache**: Stores the latest online publish timestamp in sessionStorage to conserve API queries.
+*   **Favourites Upgrade Migration**: Features an automated one-time migration that adds the Time Zone Converter and Feedback Hub to upgrading users' cached browser favorites seamlessly.
+  `,
   '1.5.4': `
-## v1.5.4 (Latest Release) — Interactive Sidebar Favourites Reordering 🌟
+## v1.5.4 — Interactive Sidebar Favourites Reordering 🌟
 *   **Dynamic Favourites Reordering**: You can now reorder your sidebar favourites dynamically using new Move Up/Move Down glassmorphic chevron buttons next to each favorite item (when the sidebar is expanded).
 *   **Bottom-Pinned Feedback Hub**: As requested, the Feedback & Support Hub favorite is permanently pinned to the very bottom of the favourites list, keeping support always easy to find. It does not have reordering controls, and other favourites cannot move below it.
 *   **Enriched Default Favourites**: The default favourites list on first startup is now updated to include **7 tools** instead of 5, adding both the *Time Zone Converter* and the *Feedback & Support Hub* by default.
@@ -82,6 +89,8 @@ export function getFullChangelogText(): string {
 
 Welcome to the offline release notes. Here you can explore recent feature additions, fixes, and updates.
 
+---
+${changelogContent['1.5.5']}
 ---
 ${changelogContent['1.5.4']}
 ---

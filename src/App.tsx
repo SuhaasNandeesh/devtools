@@ -129,7 +129,7 @@ import { FeedbackHub } from './tools/feedback/FeedbackHub';
 import { ChangelogModal } from './components/ChangelogModal';
 import { UpdateNotification } from './components/UpdateNotification';
 import { CURRENT_VERSION } from './assets/changelogContent';
-import { isNewerVersion, evaluateUpdateCheckSchedule, saveUpdateCheckCache } from './utils/version';
+import { isNewerVersion, isHotfixAvailable, BUILD_TIME, evaluateUpdateCheckSchedule, saveUpdateCheckCache } from './utils/version';
 
 
 interface ToolEntry {
@@ -1031,7 +1031,7 @@ export const App: React.FC = () => {
 
   // Update checker and changelog states
   const [changelogOpen, setChangelogOpen] = useState(false);
-  const [newVersionAvailable, setNewVersionAvailable] = useState<{ version: string; url: string } | null>(null);
+  const [newVersionAvailable, setNewVersionAvailable] = useState<{ version: string; url: string; isHotfix?: boolean } | null>(null);
 
   // Opt-in prompt dialog visibility
   const [showOptInPrompt, setShowOptInPrompt] = useState(() => {
@@ -1126,7 +1126,17 @@ export const App: React.FC = () => {
           if (isNewerVersion(CURRENT_VERSION, schedule.cachedLatestVersion)) {
             setNewVersionAvailable({
               version: schedule.cachedLatestVersion,
-              url: schedule.cachedReleaseUrl
+              url: schedule.cachedReleaseUrl,
+              isHotfix: false
+            });
+          } else if (
+            schedule.cachedPublishedAt &&
+            isHotfixAvailable(CURRENT_VERSION, BUILD_TIME, schedule.cachedLatestVersion, schedule.cachedPublishedAt)
+          ) {
+            setNewVersionAvailable({
+              version: schedule.cachedLatestVersion,
+              url: schedule.cachedReleaseUrl,
+              isHotfix: true
             });
           }
         }
@@ -1142,14 +1152,25 @@ export const App: React.FC = () => {
         const data = await response.json();
         const latestTag = data.tag_name;
         const htmlUrl = data.html_url;
+        const publishedAt = data.published_at;
 
         if (latestTag && htmlUrl) {
-          saveUpdateCheckCache(latestTag, htmlUrl);
+          saveUpdateCheckCache(latestTag, htmlUrl, publishedAt);
 
           if (isNewerVersion(CURRENT_VERSION, latestTag)) {
             setNewVersionAvailable({
               version: latestTag,
-              url: htmlUrl
+              url: htmlUrl,
+              isHotfix: false
+            });
+          } else if (
+            publishedAt &&
+            isHotfixAvailable(CURRENT_VERSION, BUILD_TIME, latestTag, publishedAt)
+          ) {
+            setNewVersionAvailable({
+              version: latestTag,
+              url: htmlUrl,
+              isHotfix: true
             });
           }
         }
@@ -2001,6 +2022,7 @@ export const App: React.FC = () => {
         <UpdateNotification
           version={newVersionAvailable.version}
           releaseUrl={newVersionAvailable.url}
+          isHotfix={newVersionAvailable.isHotfix}
           onDismiss={() => setNewVersionAvailable(null)}
         />
       )}

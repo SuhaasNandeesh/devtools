@@ -5,9 +5,10 @@ interface UpdateNotificationProps {
   version: string;
   releaseUrl: string;
   onDismiss: () => void;
+  isHotfix?: boolean;
 }
 
-export const UpdateNotification: React.FC<UpdateNotificationProps> = ({ version, releaseUrl, onDismiss }) => {
+export const UpdateNotification: React.FC<UpdateNotificationProps> = ({ version, releaseUrl, onDismiss, isHotfix }) => {
   const handleGetUpdate = () => {
     (window as any).playFeedbackSound?.('click');
     window.open(releaseUrl, '_blank', 'noopener,noreferrer');
@@ -44,7 +45,7 @@ export const UpdateNotification: React.FC<UpdateNotificationProps> = ({ version,
         <div className="flex items-center gap-2">
           <Sparkles size={16} style={{ color: 'var(--accent-primary)', flexShrink: 0 }} />
           <span style={{ fontWeight: 700, fontSize: '0.85rem', color: 'var(--text-primary)', letterSpacing: '-0.01em' }}>
-            New DevTools Update Available!
+            {isHotfix ? 'New DevTools Hotfix Available!' : 'New DevTools Update Available!'}
           </span>
         </div>
         <button
@@ -70,7 +71,11 @@ export const UpdateNotification: React.FC<UpdateNotificationProps> = ({ version,
 
       {/* Description */}
       <div style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', lineHeight: 1.4 }}>
-        A newer release (<strong>{version}</strong>) has been published on GitHub. Get it to access the latest offline tools, improvements, and optimizations!
+        {isHotfix ? (
+          <>A newer hotfix update for <strong>{version}</strong> has been published on GitHub. Get it to access the latest bugfixes and improvements!</>
+        ) : (
+          <>A newer release (<strong>{version}</strong>) has been published on GitHub. Get it to access the latest offline tools, improvements, and optimizations!</>
+        )}
       </div>
 
       {/* Action Buttons */}

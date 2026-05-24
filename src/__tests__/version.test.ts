@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { isNewerVersion, evaluateUpdateCheckSchedule, saveUpdateCheckCache } from '../utils/version';
+import { isNewerVersion, isHotfixAvailable, evaluateUpdateCheckSchedule, saveUpdateCheckCache } from '../utils/version';
 
 describe('Version Semver Comparator', () => {
   it('should identify newer patch versions', () => {
@@ -39,6 +39,35 @@ describe('Version Semver Comparator', () => {
   });
 });
 
+describe('Same-Version Hotfix Comparator', () => {
+  it('should identify a hotfix if version tags are identical and release publish time is strictly newer', () => {
+    const currentBuild = '2026-05-24T12:00:00Z';
+    const latestPublished = '2026-05-24T14:30:00Z';
+    expect(isHotfixAvailable('1.5.4', currentBuild, '1.5.4', latestPublished)).toBe(true);
+    expect(isHotfixAvailable('v1.5.4', currentBuild, '1.5.4', latestPublished)).toBe(true);
+    expect(isHotfixAvailable('1.5.4', currentBuild, 'v1.5.4', latestPublished)).toBe(true);
+  });
+
+  it('should return false if versions are identical but online release publish time is older or equal', () => {
+    const currentBuild = '2026-05-24T12:00:00Z';
+    const olderPublished = '2026-05-24T10:00:00Z';
+    const equalPublished = '2026-05-24T12:00:00Z';
+    expect(isHotfixAvailable('1.5.4', currentBuild, '1.5.4', olderPublished)).toBe(false);
+    expect(isHotfixAvailable('1.5.4', currentBuild, '1.5.4', equalPublished)).toBe(false);
+  });
+
+  it('should return false if versions are different', () => {
+    const currentBuild = '2026-05-24T12:00:00Z';
+    const latestPublished = '2026-05-24T14:30:00Z';
+    expect(isHotfixAvailable('1.5.4', currentBuild, '1.5.5', latestPublished)).toBe(false);
+  });
+
+  it('should return false if build timestamps are unparseable or malformed', () => {
+    expect(isHotfixAvailable('1.5.4', 'invalid-time', '1.5.4', '2026-05-24T14:30:00Z')).toBe(false);
+    expect(isHotfixAvailable('1.5.4', '2026-05-24T12:00:00Z', '1.5.4', 'invalid-time')).toBe(false);
+  });
+});
+
 describe('Update Session Cache Manager', () => {
   const sessionStorageMock = (() => {
     let store: Record<string, string> = {};
@@ -64,11 +93,12 @@ describe('Update Session Cache Manager', () => {
   });
 
   it('should read from session cache if checks are cached in the same session', () => {
-    saveUpdateCheckCache('1.2.0', 'https://github.com/releases/1.2.0');
+    saveUpdateCheckCache('1.2.0', 'https://github.com/releases/1.2.0', '2026-05-24T14:30:00Z');
 
     const check = evaluateUpdateCheckSchedule();
     expect(check.shouldCheck).toBe(false);
     expect(check.cachedLatestVersion).toBe('1.2.0');
     expect(check.cachedReleaseUrl).toBe('https://github.com/releases/1.2.0');
+    expect(check.cachedPublishedAt).toBe('2026-05-24T14:30:00Z');
   });
 });
