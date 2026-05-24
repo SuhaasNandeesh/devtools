@@ -60,7 +60,8 @@ import {
   Languages,
   Keyboard,
   Maximize,
-  Palette
+  Palette,
+  MessageSquare
 } from 'lucide-react';
 
 import { toggleFavouriteArray } from './utils/engines';
@@ -115,6 +116,7 @@ import { AspectRatioCalc } from './tools/frontend/AspectRatioCalc';
 import { SvgOptimizer } from './tools/frontend/SvgOptimizer';
 import { WebFontStacks } from './tools/frontend/WebFontStacks';
 import { GlassmorphismStyler } from './tools/frontend/GlassmorphismStyler';
+import { FeedbackHub } from './tools/feedback/FeedbackHub';
 
 // Update & Changelog components and utilities
 import { ChangelogModal } from './components/ChangelogModal';
@@ -446,6 +448,13 @@ const TOOLS_CATALOG: ToolEntry[] = [
     category: 'Web Design & CSS Playgrounds',
     description: 'Frosted CSS backdrops, blur radii, and shadow designer dashboard.',
     component: GlassmorphismStyler
+  },
+  {
+    id: 'feedback-hub',
+    name: 'Feedback & Support Hub',
+    category: 'Support',
+    description: 'Create offline feedback reports, manage drafts locker, or bridge to GitHub issues securely.',
+    component: FeedbackHub
   }
 ];
 
@@ -541,6 +550,8 @@ const getToolIcon = (toolId: string): React.ComponentType<{ size?: number; style
       return Type;
     case 'glassmorphic-css-styler':
       return Sparkles;
+    case 'feedback-hub':
+      return MessageSquare;
     default:
       return FileCode;
   }

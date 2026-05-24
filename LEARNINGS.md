@@ -116,3 +116,12 @@ This log documents crucial architectural pivots, engineering constraints, edge c
 
 
 
+---
+
+## 13. Offline-First Feedback Hub & Secure GitHub Bridge (May 2026)
+*   **Problem**: Implementing a user feedback mechanism inside a 100% offline-first application without compromising user privacy, introducing tracking telemetry, or relying on external HTTP server endpoints.
+*   **Resolution**:
+    1.  **LocalStorage Drafts Locker**: Configured a complete client-side drafts ecosystem saved into `localStorage` (`devtools_feedback_drafts`). Users can compose reports, save drafts, edit existing ones, or clear/delete them safely without sending any byte over the wire.
+    2.  **Markdown Exporter**: Designed a local file downloader using client-side `Blob` and `URL.createObjectURL`. It packages user compose data (title, description, diagnostic system parameters) into a beautiful, structured Markdown file (`devtools-feedback-[type]-[timestamp].md`) streamed directly to their local system offline.
+    3.  **Secure GitHub Bridge URL Compiler**: Created an online bridge using a direct, URL-encoded GitHub new issue template link (`window.open`). It packages title, labels, and the formatted Markdown diagnostic report into URL parameters. This triggers a secure new browser tab opening where users can review and submit the issue using their own logged-in GitHub account, requiring zero background network queries from the offline app itself.
+    4.  **Tree-Shakeable Vector Paths**: Substituted brand-specific unexported SVG icons with standard web-safe Lucide vectors (`Globe` representing the external bridge link) to guarantee compile compatibility and keep single-file bundles under 550kB.

@@ -1,8 +1,15 @@
-export const CURRENT_VERSION = '1.4.2';
+export const CURRENT_VERSION = '1.5.0';
 
 export const changelogContent: Record<string, string> = {
+  '1.5.0': `
+## v1.5.0 (Latest Release) — Offline Feedback & Issue Hub 💬
+*   **Offline Feedback Hub**: Added a premium Support category tool allowing you to draft bug reports, enhancement requests, or feature proposals.
+*   **Secure Drafts Locker**: Safely draft and store reports inside browser-level \`localStorage\` to ensure total client-side privacy.
+*   **Markdown Exporter**: Instantly package your feedback as structured, diagnostic-enriched Markdown (\`.md\`) files downloaded directly.
+*   **Secure GitHub Bridge**: Compile your reports into URL-encoded parameters and bridge directly to the GitHub Issue page with a single click.
+  `,
   '1.4.2': `
-## v1.4.2 (Latest Release) — Streamlined Direct Update Navigation 🚀
+## v1.4.2 — Streamlined Direct Update Navigation 🚀
 *   **Streamlined Direct Navigation**: Upgraded the update notification banner to open the GitHub Releases page instantly on clicking the main button. This completely bypasses browser-level \`file://\` sandboxing blocks (which restrict external HTTPS fetches from local file directories in highly secure desktop environments) with 100% reliability!
   `,
   '1.4.1': `
@@ -52,6 +59,8 @@ export function getFullChangelogText(): string {
 
 Welcome to the offline release notes. Here you can explore recent feature additions, fixes, and updates.
 
+---
+${changelogContent['1.5.0']}
 ---
 ${changelogContent['1.4.2']}
 ---

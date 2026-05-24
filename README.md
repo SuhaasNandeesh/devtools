@@ -18,15 +18,16 @@ All computations, conversions, beautifiers, and cryptographic keys are executed 
 ## 🚀 Key Platform Features
 
 *   **Integrated Onboarding (Welcome Guide)**: Automatic first-launch layout guide detailing shortcuts, tool capabilities, and operations.
-*   **Command Palette (`Cmd + K` / `Ctrl + K`)**: Keyboard-driven global search tool finder. Instantly search and navigate between all 53 tools.
+*   **Command Palette (`Cmd + K` / `Ctrl + K`)**: Keyboard-driven global search tool finder. Instantly search and navigate between all 54 tools.
 *   **Clipboard History Drawer (`Alt + V`)**: A system-wide sliding history panel that caches your last 30 generated outputs and copied clips offline in local storage, allowing manual scrapbook notes and fast inputs injections.
 *   **Smart Clipboard Auto-Detector**: Listens to focus transitions and parses clipboard values. If valid JSON, UUIDs, Epochs, or Base64 is matched, a toast offers to instantly open the correct tool.
 *   **Update Sync & Offline Changelog**: Background GitHub Release sync (with sessionStorage caching and offline-first safety) that alerts you when a newer version is published. Features a stateful, **CORS-Resilient One-Click Downloader** streaming the latest stable single-file bundle directly to your Downloads folder bypassing browser \`file://\` sandboxing blocks, and automatically prompts an offline-first chronological Changelog modal on the very first start after upgrading.
+*   **Offline Feedback Hub & Secure Bridge**: Compose reports and save drafts inside a secure client-side `localStorage` locker to ensure 100% offline confidentiality. Export reports directly as structured Markdown files, or bridge to the online GitHub Issue editor with pre-populated diagnostics and zero background tracking telemetry.
 *   **Unified UI Design System**: Beautiful glassmorphic UI styled with HSL variables supporting full high-contrast dark and light modes. Fully responsive using container query metrics.
 
 ---
 
-## 🛠 Complete 53 Offline Utility Scenarios Catalog
+## 🛠 Complete 54 Offline Utility Scenarios Catalog
 
 ### 1. Converters & Parsers
 *   **Epoch Unix Timestamp**: Convert epoch seconds/milliseconds to local/UTC dates and vice versa. Includes a ticking local epoch clock.
@@ -92,7 +93,10 @@ All computations, conversions, beautifiers, and cryptographic keys are executed 
 *   **Safe Web Font Stack Reference**: CSS declared system-safe font sets.
 *   **Glassmorphism CSS Styler**: Dashboard to design background blur, frost overlays, and opacity styles.
 
-### 7. Core Platforms
+### 7. Support & Diagnostics
+*   **Offline Feedback Hub**: Compose bugs, enhancements, and feature proposals offline. Saves drafts locally in `localStorage`, downloads diagnostic-enriched Markdown files, or launches a pre-filled GitHub issue tab.
+
+### 8. Core Platforms
 *   **Integrated Clipboard & Scrapbook Manager**: multi-functional scrapbook panel.
 
 ---
