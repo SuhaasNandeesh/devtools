@@ -3,6 +3,9 @@ import { useTheme } from './context/ThemeContext';
 import { useClipboard } from './context/ClipboardContext';
 import { ClipboardPanel } from './components/ClipboardPanel';
 import { OnboardingModal } from './components/OnboardingModal';
+import { ChangelogModal } from './components/ChangelogModal';
+import { UpdateNotification } from './components/UpdateNotification';
+import { DashboardHub } from './components/DashboardHub';
 
 import {
   ChevronLeft,
@@ -18,52 +21,9 @@ import {
   Sparkles,
   Command,
   X,
-  FileCode,
-  ArrowRight,
-  HelpCircle,
   Star,
-  Clock,
-  Binary,
-  RefreshCw,
-  Braces,
-  Code2,
-  Paintbrush,
-  Database,
-  BookOpen,
-  Zap,
-  Fingerprint,
-  Key,
-  AlignLeft,
-  Lock,
-  Shield,
-  QrCode,
-  Barcode,
-  Cpu,
-  Users,
-  Calendar,
-  Terminal,
-  Type,
-  GitCompare,
-  ArrowUpAZ,
-  Scissors,
-  Gauge,
-  Eraser,
-  Slash,
-  Replace,
-  Globe,
-  Send,
-  AlertCircle,
-  Network,
-  Laptop,
-  Link,
-  Box,
-  Layout,
-  Layers,
-  Languages,
-  Keyboard,
-  Maximize,
-  Palette,
-  MessageSquare
+  HelpCircle,
+  ArrowRight
 } from 'lucide-react';
 
 import {
@@ -72,570 +32,17 @@ import {
   reorderFavourites
 } from './utils/engines';
 
-// Tool Components
-import { EpochConverter } from './tools/converters/EpochConverter';
-import { RadixConverter } from './tools/converters/RadixConverter';
-import { Base64Converter } from './tools/converters/Base64Converter';
-import { TimeZoneConverter } from './tools/converters/TimeZoneConverter';
-import { JSONFormatter } from './tools/formatters/JSONFormatter';
-import { XmlFormatter } from './tools/formatters/XmlFormatter';
-import { HtmlFormatter } from './tools/formatters/HtmlFormatter';
-import { CssFormatter } from './tools/formatters/CssFormatter';
-import { SqlFormatter } from './tools/formatters/SqlFormatter';
-import { MarkdownPreviewer } from './tools/formatters/MarkdownPreviewer';
-import { JsMinifier } from './tools/formatters/JsMinifier';
-import { UUIDGenerator } from './tools/generators/UUIDGenerator';
-import { PasswordGenerator } from './tools/generators/PasswordGenerator';
-import { LoremIpsumGenerator } from './tools/generators/LoremIpsumGenerator';
-import { HashGenerator } from './tools/generators/HashGenerator';
-import { HmacGenerator } from './tools/generators/HmacGenerator';
-import { QrCodeGenerator } from './tools/generators/QrCodeGenerator';
-import { BarcodeGenerator } from './tools/generators/BarcodeGenerator';
-import { RsaGenerator } from './tools/generators/RsaGenerator';
-import { FakeDataGenerator } from './tools/generators/FakeDataGenerator';
-import { CronDescriptor } from './tools/generators/CronDescriptor';
-import { RegexTester } from './tools/text/RegexTester';
-import { CaseConverter } from './tools/text/CaseConverter';
-import { TextDiff } from './tools/text/TextDiff';
-import { LineSorter } from './tools/text/LineSorter';
-import { LineSplitter } from './tools/text/LineSplitter';
-import { WordCounter } from './tools/text/WordCounter';
-import { CommentStripper } from './tools/text/CommentStripper';
-import { StringEscaper } from './tools/text/StringEscaper';
-import { FindReplace } from './tools/text/FindReplace';
-import { SlugGenerator } from './tools/text/SlugGenerator';
-
-// Category E: Network & API Debugging Tools
-import { JWTDebugger } from './tools/network/JWTDebugger';
-import { CurlBuilder } from './tools/network/CurlBuilder';
-import { HttpStatusLookup } from './tools/network/HttpStatusLookup';
-import { SubnetCalculator } from './tools/network/SubnetCalculator';
-import { UserAgentInspector } from './tools/network/UserAgentInspector';
-import { LinkExtractor } from './tools/network/LinkExtractor';
-import { MimeLookup } from './tools/network/MimeLookup';
-
-// Category F: Web Design & CSS Playgrounds
-import { CSSShadowBorder } from './tools/frontend/CSSShadowBorder';
-import { CSSLayoutSandbox } from './tools/frontend/CSSLayoutSandbox';
-import { HtmlAccents } from './tools/frontend/HtmlAccents';
-import { KeyboardMonitor } from './tools/frontend/KeyboardMonitor';
-import { AspectRatioCalc } from './tools/frontend/AspectRatioCalc';
-import { SvgOptimizer } from './tools/frontend/SvgOptimizer';
-import { WebFontStacks } from './tools/frontend/WebFontStacks';
-import { GlassmorphismStyler } from './tools/frontend/GlassmorphismStyler';
-import { FeedbackHub } from './tools/feedback/FeedbackHub';
-
-// Update & Changelog components and utilities
-import { ChangelogModal } from './components/ChangelogModal';
-import { UpdateNotification } from './components/UpdateNotification';
+import { TOOLS_CATALOG } from './utils/toolsCatalog';
+import type { ToolEntry } from './utils/toolsCatalog';
+import { getToolIcon } from './utils/iconHelper';
+import { playFeedbackSound, setAudioMutedGlobal } from './utils/audioFeedback';
 import { CURRENT_VERSION } from './assets/changelogContent';
-import { isNewerVersion, isHotfixAvailable, BUILD_TIME, evaluateUpdateCheckSchedule, saveUpdateCheckCache } from './utils/version';
 
-
-interface ToolEntry {
-  id: string;
-  name: string;
-  category: string;
-  description: string;
-  component: React.FC;
-}
-
-const TOOLS_CATALOG: ToolEntry[] = [
-  {
-    id: 'epoch-converter',
-    name: 'Epoch Unix Timestamp',
-    category: 'Converters',
-    description: 'Convert seconds/milliseconds epochs to human dates and vice versa.',
-    component: EpochConverter
-  },
-  {
-    id: 'timezone-converter',
-    name: 'Time Zone Converter',
-    category: 'Converters',
-    description: 'Convert UTC, IST, GMT/BST, and global timezones with live ticking dashboards.',
-    component: TimeZoneConverter
-  },
-  {
-    id: 'radix-converter',
-    name: 'Radix Base Converter',
-    category: 'Converters',
-    description: 'Convert Dec, Hex, Bin, Oct representations instantly.',
-    component: RadixConverter
-  },
-  {
-    id: 'base64-converter',
-    name: 'Base64 Text Encoder',
-    category: 'Converters',
-    description: 'UTF-8 compatible string encoding and decoding.',
-    component: Base64Converter
-  },
-  {
-    id: 'json-formatter',
-    name: 'JSON Formatter & Minifier',
-    category: 'Formatters',
-    description: 'Sort keys, pretty-print or compress JSON records.',
-    component: JSONFormatter
-  },
-  {
-    id: 'xml-formatter',
-    name: 'XML Formatter & Minifier',
-    category: 'Formatters',
-    description: 'Prettify XML structures or compress markup offline.',
-    component: XmlFormatter
-  },
-  {
-    id: 'html-formatter',
-    name: 'HTML Formatter & Minifier',
-    category: 'Formatters',
-    description: 'Structure HTML element scopes or minify web templates.',
-    component: HtmlFormatter
-  },
-  {
-    id: 'css-formatter',
-    name: 'CSS Beautifier & Minifier',
-    category: 'Formatters',
-    description: 'Clean stylesheet selectors or compress CSS code.',
-    component: CssFormatter
-  },
-  {
-    id: 'sql-formatter',
-    name: 'SQL Query Beautifier',
-    category: 'Formatters',
-    description: 'Standardize keyword casings and format database queries.',
-    component: SqlFormatter
-  },
-  {
-    id: 'markdown-previewer',
-    name: 'Markdown to HTML Previewer',
-    category: 'Formatters',
-    description: 'Real-time Markdown editor and live HTML rendering.',
-    component: MarkdownPreviewer
-  },
-  {
-    id: 'js-minifier',
-    name: 'JS / TS Minifier',
-    category: 'Formatters',
-    description: 'Compress, optimize, and minify JavaScript and TypeScript.',
-    component: JsMinifier
-  },
-  {
-    id: 'uuid-generator',
-    name: 'UUID / GUID Generator',
-    category: 'Generators',
-    description: 'Bulk synthesize version 4 or version 1 secure identifiers.',
-    component: UUIDGenerator
-  },
-  {
-    id: 'password-generator',
-    name: 'Strong Password Generator',
-    category: 'Generators',
-    description: 'Generate secure, high-entropy random passwords offline.',
-    component: PasswordGenerator
-  },
-  {
-    id: 'lorem-ipsum-generator',
-    name: 'Lorem Ipsum Generator',
-    category: 'Generators',
-    description: 'Generate standard Latin placeholder text by words/sentences/paragraphs.',
-    component: LoremIpsumGenerator
-  },
-  {
-    id: 'hash-generator',
-    name: 'Hash Digest Generator',
-    category: 'Generators',
-    description: 'Compute MD5, SHA-256, and SHA-512 hashes in real-time.',
-    component: HashGenerator
-  },
-  {
-    id: 'hmac-generator',
-    name: 'HMAC Signature Generator',
-    category: 'Generators',
-    description: 'Generate HMAC-SHA256 signatures offline with secret keys.',
-    component: HmacGenerator
-  },
-  {
-    id: 'qrcode-generator',
-    name: 'QR Code Generator',
-    category: 'Generators',
-    description: 'Generate scannable QR Code vector SVGs locally offline.',
-    component: QrCodeGenerator
-  },
-  {
-    id: 'barcode-generator',
-    name: 'Barcode Generator',
-    category: 'Generators',
-    description: 'Generate Code 128 barcode vector SVGs offline.',
-    component: BarcodeGenerator
-  },
-  {
-    id: 'rsa-generator',
-    name: 'RSA Key Pair Generator',
-    category: 'Generators',
-    description: 'Locally generate secure public/private key pairs in PEM layouts.',
-    component: RsaGenerator
-  },
-  {
-    id: 'fake-data-generator',
-    name: 'Fake Test Data Generator',
-    category: 'Generators',
-    description: 'Generate repeatable mock databases of names, cards, and addresses.',
-    component: FakeDataGenerator
-  },
-  {
-    id: 'cron-descriptor',
-    name: 'Cron Scheduler Descriptor',
-    category: 'Generators',
-    description: 'Build cron scheduler rules visually and translate them to plain-English.',
-    component: CronDescriptor
-  },
-  {
-    id: 'regex-tester',
-    name: 'Interactive Regex Tester',
-    category: 'Text Utilities',
-    description: 'Test patterns, highlights match overlays and groupings.',
-    component: RegexTester
-  },
-  {
-    id: 'case-converter',
-    name: 'String Case Converter',
-    category: 'Text Utilities',
-    description: 'Convert string casing styles between camel, Pascal, snake, kebab, or constant case configurations.',
-    component: CaseConverter
-  },
-  {
-    id: 'text-diff',
-    name: 'Text Diff & Comparison',
-    category: 'Text Utilities',
-    description: 'Line-by-line visual difference highlighting of text edits, insertions and deletions.',
-    component: TextDiff
-  },
-  {
-    id: 'line-sorter',
-    name: 'Line Sorter & Deduplicator',
-    category: 'Text Utilities',
-    description: 'Filter empty rows, remove duplicates and sort lines alphabetically.',
-    component: LineSorter
-  },
-  {
-    id: 'line-splitter',
-    name: 'Huge Line Splitter',
-    category: 'Text Utilities',
-    description: 'Split massive horizontal lists or CSV structures into custom line chunks.',
-    component: LineSplitter
-  },
-  {
-    id: 'word-counter',
-    name: 'Word & Token Counter',
-    category: 'Text Utilities',
-    description: 'Count words, chars, white spaces, reading speeds and top recurring token density charts.',
-    component: WordCounter
-  },
-  {
-    id: 'comment-stripper',
-    name: 'Code Comment Stripper',
-    category: 'Text Utilities',
-    description: 'Strip comments from JS/TS, Python, C++, HTML and CSS snippets.',
-    component: CommentStripper
-  },
-  {
-    id: 'string-escaper',
-    name: 'String Escaper & Unescaper',
-    category: 'Text Utilities',
-    description: 'Safely encode or decode special characters in HTML, JSON, SQL, or C# styles.',
-    component: StringEscaper
-  },
-  {
-    id: 'find-replace',
-    name: 'Find & Replace',
-    category: 'Text Utilities',
-    description: 'Search and replace string tokens with regex search patterns or literal lookups.',
-    component: FindReplace
-  },
-  {
-    id: 'slug-generator',
-    name: 'Slug Generator',
-    category: 'Text Utilities',
-    description: 'Translate special Unicode characters into clean URL-safe hyphenated SEO slugs.',
-    component: SlugGenerator
-  },
-  {
-    id: 'jwt-debugger',
-    name: 'JWT Debugger',
-    category: 'Network Utilities',
-    description: 'Decode and inspect JSON Web Token (JWT) claims offline.',
-    component: JWTDebugger
-  },
-  {
-    id: 'curl-builder',
-    name: 'Curl Command Builder',
-    category: 'Network Utilities',
-    description: 'Visual form generator for customized cURL commands.',
-    component: CurlBuilder
-  },
-  {
-    id: 'http-status-lookup',
-    name: 'HTTP Status Directory',
-    category: 'Network Utilities',
-    description: 'Directory reference sheet of standard HTTP status codes.',
-    component: HttpStatusLookup
-  },
-  {
-    id: 'subnet-calculator',
-    name: 'IPv4 CIDR Calculator',
-    category: 'Network Utilities',
-    description: 'Visual IPv4 calculator and CIDR boundary slider.',
-    component: SubnetCalculator
-  },
-  {
-    id: 'user-agent-inspector',
-    name: 'User Agent Inspector',
-    category: 'Network Utilities',
-    description: 'Parse, inspect, and decode User Agent headers offline.',
-    component: UserAgentInspector
-  },
-  {
-    id: 'link-extractor',
-    name: 'HTML Link Scraper',
-    category: 'Network Utilities',
-    description: 'Extract, scrape, and group hyperlinks and assets from raw HTML.',
-    component: LinkExtractor
-  },
-  {
-    id: 'mime-lookup',
-    name: 'MIME Types Lookup',
-    category: 'Network Utilities',
-    description: 'Offline searchable database of standard MIME content types.',
-    component: MimeLookup
-  },
-  {
-    id: 'css-shadow-border',
-    name: 'CSS Shadow & Radius',
-    category: 'Web Design & CSS Playgrounds',
-    description: 'Visual designer for CSS box shadows and border corner radii.',
-    component: CSSShadowBorder
-  },
-  {
-    id: 'css-layout-sandbox',
-    name: 'CSS Flexbox & Grid Sandbox',
-    category: 'Web Design & CSS Playgrounds',
-    description: 'Real-time visual layout designer for CSS Flexbox and Grid containers.',
-    component: CSSLayoutSandbox
-  },
-  {
-    id: 'html-accents-encoder',
-    name: 'HTML Accents Entity Encoder',
-    category: 'Web Design & CSS Playgrounds',
-    description: 'Translate special Unicode accented characters to HTML named entities.',
-    component: HtmlAccents
-  },
-  {
-    id: 'keyboard-event-monitor',
-    name: 'Keyboard Event Monitor',
-    category: 'Web Design & CSS Playgrounds',
-    description: 'Real-time capturing and display of key event parameters.',
-    component: KeyboardMonitor
-  },
-  {
-    id: 'aspect-ratio-calculator',
-    name: 'Aspect Ratio Scaler',
-    category: 'Web Design & CSS Playgrounds',
-    description: 'Simplify display resolutions or lock ratios to scale width and height coordinates.',
-    component: AspectRatioCalc
-  },
-  {
-    id: 'svg-optimizer',
-    name: 'SVG Vector Optimizer',
-    category: 'Web Design & CSS Playgrounds',
-    description: 'Optimize, minifies, and render raw SVG vector designs offline.',
-    component: SvgOptimizer
-  },
-  {
-    id: 'web-safe-font-stacks',
-    name: 'Web Safe Font Stacks',
-    category: 'Web Design & CSS Playgrounds',
-    description: 'Cross-platform CSS safe font families reference directory.',
-    component: WebFontStacks
-  },
-  {
-    id: 'glassmorphic-css-styler',
-    name: 'Glassmorphism CSS Styler',
-    category: 'Web Design & CSS Playgrounds',
-    description: 'Frosted CSS backdrops, blur radii, and shadow designer dashboard.',
-    component: GlassmorphismStyler
-  },
-  {
-    id: 'feedback-hub',
-    name: 'Feedback & Support Hub',
-    category: 'Support',
-    description: 'Create offline feedback reports, manage drafts locker, or bridge to GitHub issues securely.',
-    component: FeedbackHub
-  }
-];
-
-const getToolIcon = (toolId: string): React.ComponentType<{ size?: number; style?: React.CSSProperties }> => {
-  switch (toolId) {
-    case 'epoch-converter':
-      return Clock;
-    case 'timezone-converter':
-      return Clock;
-    case 'radix-converter':
-      return Binary;
-    case 'base64-converter':
-      return RefreshCw;
-    case 'json-formatter':
-      return Braces;
-    case 'xml-formatter':
-      return Code2;
-    case 'html-formatter':
-      return FileCode;
-    case 'css-formatter':
-      return Paintbrush;
-    case 'sql-formatter':
-      return Database;
-    case 'markdown-previewer':
-      return BookOpen;
-    case 'js-minifier':
-      return Zap;
-    case 'uuid-generator':
-      return Fingerprint;
-    case 'password-generator':
-      return Key;
-    case 'lorem-ipsum-generator':
-      return AlignLeft;
-    case 'hash-generator':
-      return Lock;
-    case 'hmac-generator':
-      return Shield;
-    case 'qrcode-generator':
-      return QrCode;
-    case 'barcode-generator':
-      return Barcode;
-    case 'rsa-generator':
-      return Cpu;
-    case 'fake-data-generator':
-      return Users;
-    case 'cron-descriptor':
-      return Calendar;
-    case 'regex-tester':
-      return Terminal;
-    case 'case-converter':
-      return Type;
-    case 'text-diff':
-      return GitCompare;
-    case 'line-sorter':
-      return ArrowUpAZ;
-    case 'line-splitter':
-      return Scissors;
-    case 'word-counter':
-      return Gauge;
-    case 'comment-stripper':
-      return Eraser;
-    case 'string-escaper':
-      return Slash;
-    case 'find-replace':
-      return Replace;
-    case 'slug-generator':
-      return Globe;
-    case 'jwt-debugger':
-      return Send;
-    case 'curl-builder':
-      return Terminal;
-    case 'http-status-lookup':
-      return AlertCircle;
-    case 'subnet-calculator':
-      return Network;
-    case 'user-agent-inspector':
-      return Laptop;
-    case 'link-extractor':
-      return Link;
-    case 'mime-lookup':
-      return Box;
-    case 'css-shadow-border':
-      return Layout;
-    case 'css-layout-sandbox':
-      return Layers;
-    case 'html-accents-encoder':
-      return Languages;
-    case 'keyboard-event-monitor':
-      return Keyboard;
-    case 'aspect-ratio-calculator':
-      return Maximize;
-    case 'svg-optimizer':
-      return Palette;
-    case 'web-safe-font-stacks':
-      return Type;
-    case 'glassmorphic-css-styler':
-      return Sparkles;
-    case 'feedback-hub':
-      return MessageSquare;
-    default:
-      return FileCode;
-  }
-};
-
-let audioCtx: AudioContext | null = null;
-let audioMutedGlobal = true; // Default to muted by default as requested!
-
-if (typeof localStorage !== 'undefined') {
-  const cachedMute = localStorage.getItem('devtools_audio_muted');
-  if (cachedMute !== null) {
-    audioMutedGlobal = cachedMute === 'true';
-  }
-}
-
-const playFeedbackSound = (type: 'click' | 'success') => {
-  if (audioMutedGlobal) return;
-  try {
-    if (!audioCtx) {
-      audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
-    }
-    if (audioCtx.state === 'suspended') {
-      audioCtx.resume();
-    }
-    const now = audioCtx.currentTime;
-    if (type === 'click') {
-      const osc = audioCtx.createOscillator();
-      const gainNode = audioCtx.createGain();
-      osc.type = 'triangle';
-      osc.frequency.setValueAtTime(580, now);
-      osc.frequency.exponentialRampToValueAtTime(120, now + 0.03);
-      gainNode.gain.setValueAtTime(0.06, now);
-      gainNode.gain.exponentialRampToValueAtTime(0.001, now + 0.03);
-      osc.connect(gainNode);
-      gainNode.connect(audioCtx.destination);
-      osc.start(now);
-      osc.stop(now + 0.03);
-    } else if (type === 'success') {
-      const gainNode = audioCtx.createGain();
-      gainNode.gain.setValueAtTime(0.08, now);
-      gainNode.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
-      gainNode.connect(audioCtx.destination);
-
-      const osc1 = audioCtx.createOscillator();
-      osc1.type = 'sine';
-      osc1.frequency.setValueAtTime(523.25, now);
-      osc1.frequency.exponentialRampToValueAtTime(783.99, now + 0.15);
-      osc1.connect(gainNode);
-
-      const osc2 = audioCtx.createOscillator();
-      osc2.type = 'sine';
-      osc2.frequency.setValueAtTime(659.25, now + 0.06);
-      osc2.frequency.exponentialRampToValueAtTime(1046.50, now + 0.25);
-      osc2.connect(gainNode);
-
-      osc1.start(now);
-      osc1.stop(now + 0.25);
-      osc2.start(now + 0.06);
-      osc2.stop(now + 0.25);
-    }
-  } catch (err) {
-    console.warn('Audio feedback failed:', err);
-  }
-};
-
-if (typeof window !== 'undefined') {
-  (window as any).playFeedbackSound = playFeedbackSound;
-}
+// Custom Hooks
+import { useCursorFollower } from './hooks/useCursorFollower';
+import { useSmartClipboard } from './hooks/useSmartClipboard';
+import { useUpdateChecker } from './hooks/useUpdateChecker';
+import { useGlobalHotkeys } from './hooks/useGlobalHotkeys';
 
 const getBgThemeColors = (themeName: string) => {
   switch (themeName) {
@@ -671,256 +78,6 @@ const getBgThemeColors = (themeName: string) => {
   }
 };
 
-
-
-const DashboardHub: React.FC<{
-  onSelectTool: (id: string) => void;
-  favourites: string[];
-  toggleFavourite: (id: string, e: React.MouseEvent) => void;
-  searchQuery: string;
-  setSearchQuery: (query: string) => void;
-  clipboardScrapsCount: number;
-}> = ({ onSelectTool, favourites, toggleFavourite, searchQuery, setSearchQuery, clipboardScrapsCount }) => {
-  const filteredTools = TOOLS_CATALOG.filter((tool) => {
-    const q = searchQuery.toLowerCase();
-    return (
-      tool.name.toLowerCase().includes(q) ||
-      tool.category.toLowerCase().includes(q) ||
-      tool.description.toLowerCase().includes(q)
-    );
-  });
-
-  const grouped = filteredTools.reduce((acc, tool) => {
-    if (!acc[tool.category]) acc[tool.category] = [];
-    acc[tool.category].push(tool);
-    return acc;
-  }, {} as Record<string, ToolEntry[]>);
-
-
-
-  return (
-    <div 
-      style={{ 
-        padding: 'var(--space-6)', 
-        height: '100%', 
-        overflowY: 'auto',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: 'var(--space-6)',
-        position: 'relative'
-      }}
-      className="animate-fade"
-    >
-      <div 
-        className="glass-panel"
-        style={{
-          padding: 'var(--space-6)',
-          background: 'rgba(255, 255, 255, 0.01)',
-          border: '1px solid var(--border-primary)',
-          borderRadius: 'var(--radius-lg)',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          flexWrap: 'wrap',
-          gap: 'var(--space-4)'
-        }}
-      >
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-1)' }}>
-          <h1 
-            style={{ 
-              fontSize: '1.75rem', 
-              fontWeight: 800, 
-              background: 'linear-gradient(45deg, var(--text-primary), var(--accent-primary))',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              letterSpacing: '-0.03em',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '10px'
-            }}
-          >
-            <span style={{ background: 'linear-gradient(45deg, var(--text-primary), var(--accent-primary))', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-              Welcome to DevTools
-            </span>
-            <span 
-              style={{
-                fontSize: '0.65rem',
-                fontWeight: 700,
-                background: 'var(--accent-glow)',
-                border: '1px solid var(--accent-primary)',
-                color: 'var(--accent-primary)',
-                padding: '2px 8px',
-                borderRadius: 'var(--radius-full)',
-                letterSpacing: '0.05em',
-                boxShadow: '0 0 10px var(--accent-glow)',
-                WebkitTextFillColor: 'var(--accent-primary)',
-                flexShrink: 0
-              }}
-            >
-              v{CURRENT_VERSION}
-            </span>
-          </h1>
-          <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>
-            Airtight, local-origin developer utility framework. 100% Secure & Offline.
-          </p>
-        </div>
-
-      </div>
-
-      <div 
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
-          gap: 'var(--space-4)'
-        }}
-      >
-        <div className="glass-panel" style={{ padding: 'var(--space-4)', display: 'flex', flexDirection: 'column', gap: '4px' }}>
-          <span style={{ fontSize: '0.6rem', color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase' }}>Active Utilities</span>
-          <span style={{ fontSize: '1.5rem', fontWeight: 800 }}>45 Tools</span>
-        </div>
-        <div className="glass-panel" style={{ padding: 'var(--space-4)', display: 'flex', flexDirection: 'column', gap: '4px' }}>
-          <span style={{ fontSize: '0.6rem', color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase' }}>Clipboard Scraps</span>
-          <span style={{ fontSize: '1.5rem', fontWeight: 800 }}>{clipboardScrapsCount} cached</span>
-        </div>
-        <div className="glass-panel" style={{ padding: 'var(--space-4)', display: 'flex', flexDirection: 'column', gap: '4px' }}>
-          <span style={{ fontSize: '0.6rem', color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase' }}>My Favourites</span>
-          <span style={{ fontSize: '1.5rem', fontWeight: 800 }}>{favourites.length} active</span>
-        </div>
-      </div>
-
-      <div style={{ position: 'relative', width: '100%' }}>
-        <input
-          type="text"
-          placeholder="Search all 45 utilities, converters, formatters..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="glass-input"
-          style={{
-            padding: 'var(--space-4) var(--space-10)',
-            fontSize: '1rem',
-            borderRadius: 'var(--radius-lg)'
-          }}
-        />
-        <Search 
-          size={18} 
-          style={{ 
-            position: 'absolute', 
-            left: 'var(--space-4)', 
-            top: '50%', 
-            transform: 'translateY(-50%)', 
-            color: 'var(--text-muted)' 
-          }} 
-        />
-        {searchQuery && (
-          <button
-            onClick={() => setSearchQuery('')}
-            style={{
-              position: 'absolute',
-              right: 'var(--space-4)',
-              top: '50%',
-              transform: 'translateY(-50%)',
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              color: 'var(--text-muted)'
-            }}
-          >
-            <X size={16} />
-          </button>
-        )}
-      </div>
-
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-6)' }}>
-        {Object.entries(grouped).map(([category, tools]) => {
-          if (tools.length === 0) return null;
-          return (
-            <div key={category} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-3)' }}>
-              <h2 style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--accent-primary)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                {category}
-              </h2>
-              <div 
-                style={{ 
-                  display: 'grid', 
-                  gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', 
-                  gap: 'var(--space-4)' 
-                }}
-              >
-                {tools.map((tool) => {
-                  const ToolIcon = getToolIcon(tool.id);
-                  const isFav = favourites.includes(tool.id);
-                  return (
-                    <div 
-                      key={tool.id}
-                      className="glass-panel glass-card"
-                      onClick={() => {
-                        (window as any).playFeedbackSound?.('click');
-                        onSelectTool(tool.id);
-                      }}
-                      style={{
-                        padding: 'var(--space-4)',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        justifyContent: 'space-between',
-                        gap: 'var(--space-3)',
-                        cursor: 'pointer',
-                        position: 'relative'
-                      }}
-                    >
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', width: '100%' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
-                          <div 
-                            style={{ 
-                              padding: 'var(--space-2)', 
-                              borderRadius: 'var(--radius-md)', 
-                              background: 'var(--accent-glow)',
-                              color: 'var(--accent-primary)',
-                              display: 'inline-flex'
-                            }}
-                          >
-                            <ToolIcon size={18} />
-                          </div>
-                          <span style={{ fontWeight: 700, fontSize: '0.9rem' }}>{tool.name}</span>
-                        </div>
-
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            (window as any).playFeedbackSound?.('click');
-                            toggleFavourite(tool.id, e);
-                          }}
-                          style={{
-                            background: 'none',
-                            border: 'none',
-                            cursor: 'pointer',
-                            color: isFav ? 'var(--accent-primary)' : 'var(--text-muted)',
-                            opacity: isFav ? 1 : 0.25,
-                            transition: 'opacity var(--transition-fast)'
-                          }}
-                          onMouseEnter={(e) => e.currentTarget.style.opacity = '1'}
-                          onMouseLeave={(e) => { if (!isFav) e.currentTarget.style.opacity = '0.25'; }}
-                        >
-                          <Star size={14} style={{ fill: isFav ? 'var(--accent-primary)' : 'none' }} />
-                        </button>
-                      </div>
-                      <p style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', lineHeight: 1.4, flex: 1 }}>
-                        {tool.description}
-                      </p>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', borderTop: '1px solid var(--border-primary)', paddingTop: 'var(--space-2)', fontSize: '0.7rem', color: 'var(--text-muted)' }}>
-                        <span>Click to launch</span>
-                        <ArrowRight size={10} style={{ color: 'var(--accent-primary)' }} />
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          );
-        })}
-      </div>
-    </div>
-  );
-};
-
 export const App: React.FC = () => {
   const { theme, toggleTheme } = useTheme();
   const { history, clipboardPermission, requestPermission, checkClipboardText } = useClipboard();
@@ -951,7 +108,7 @@ export const App: React.FC = () => {
     if (typeof localStorage !== 'undefined') {
       localStorage.setItem('devtools_audio_muted', audioMuted ? 'true' : 'false');
     }
-    audioMutedGlobal = audioMuted;
+    setAudioMutedGlobal(audioMuted);
   }, [audioMuted]);
 
   // Navigation states
@@ -1017,7 +174,7 @@ export const App: React.FC = () => {
 
   const moveFavourite = (toolId: string, direction: 'up' | 'down', e: React.MouseEvent) => {
     e.stopPropagation();
-    (window as any).playFeedbackSound?.('click');
+    playFeedbackSound('click');
     setFavourites((prev) => {
       const next = reorderFavourites(prev, toolId, direction);
       localStorage.setItem('devtools_favourites', JSON.stringify(next));
@@ -1031,7 +188,6 @@ export const App: React.FC = () => {
 
   // Update checker and changelog states
   const [changelogOpen, setChangelogOpen] = useState(false);
-  const [newVersionAvailable, setNewVersionAvailable] = useState<{ version: string; url: string; isHotfix?: boolean } | null>(null);
 
   // Opt-in prompt dialog visibility
   const [showOptInPrompt, setShowOptInPrompt] = useState(() => {
@@ -1043,54 +199,15 @@ export const App: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const commandInputRef = useRef<HTMLInputElement>(null);
 
-  // Smart recommendation states
-  const [smartDetectedTool, setSmartDetectedTool] = useState<ToolEntry | null>(null);
-  const [detectedText, setDetectedText] = useState('');
-
-  // High-performance custom cursor follower states
-  const [mousePos, setMousePos] = useState({ x: -100, y: -100 });
-  const [cursorHovering, setCursorHovering] = useState(false);
-  const [showCursor, setShowCursor] = useState(false);
-
-  useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      setMousePos({ x: e.clientX, y: e.clientY });
-      if (!showCursor) setShowCursor(true);
-    };
-    const handleMouseLeaveWindow = () => {
-      setShowCursor(false);
-    };
-    const handleMouseEnterWindow = () => {
-      setShowCursor(true);
-    };
-    const handleMouseOver = (e: MouseEvent) => {
-      const target = e.target as HTMLElement;
-      if (target && (
-        target.tagName === 'BUTTON' ||
-        target.tagName === 'A' ||
-        target.tagName === 'INPUT' ||
-        target.tagName === 'TEXTAREA' ||
-        target.classList.contains('glass-button') ||
-        target.closest('button') ||
-        target.closest('a')
-      )) {
-        setCursorHovering(true);
-      } else {
-        setCursorHovering(false);
-      }
-    };
-
-    window.addEventListener('mousemove', handleMouseMove);
-    window.addEventListener('mouseover', handleMouseOver);
-    document.addEventListener('mouseleave', handleMouseLeaveWindow);
-    document.addEventListener('mouseenter', handleMouseEnterWindow);
-    return () => {
-      window.removeEventListener('mousemove', handleMouseMove);
-      window.removeEventListener('mouseover', handleMouseOver);
-      document.removeEventListener('mouseleave', handleMouseLeaveWindow);
-      document.removeEventListener('mouseenter', handleMouseEnterWindow);
-    };
-  }, [showCursor]);
+  // Custom hooks integrations
+  const { mousePos, cursorHovering, showCursor } = useCursorFollower();
+  const { smartDetectedTool, detectedText, setSmartDetectedTool } = useSmartClipboard(
+    clipboardPermission,
+    checkClipboardText,
+    activeToolId
+  );
+  const { newVersionAvailable, setNewVersionAvailable } = useUpdateChecker();
+  useGlobalHotkeys(setCommandPaletteOpen, setClipboardDrawerOpen);
 
   // First Start / Upgrade Changelog check
   useEffect(() => {
@@ -1110,103 +227,10 @@ export const App: React.FC = () => {
     }
   }, []);
 
-  // Background GitHub Release Sync
-  useEffect(() => {
-    // Only check if system is online
-    if (typeof navigator !== 'undefined' && !navigator.onLine) {
-      return;
-    }
-
-    const runUpdateCheck = async () => {
-      const schedule = evaluateUpdateCheckSchedule();
-      
-      // If cached for 12 hours
-      if (!schedule.shouldCheck) {
-        if (schedule.cachedLatestVersion && schedule.cachedReleaseUrl) {
-          if (isNewerVersion(CURRENT_VERSION, schedule.cachedLatestVersion)) {
-            setNewVersionAvailable({
-              version: schedule.cachedLatestVersion,
-              url: schedule.cachedReleaseUrl,
-              isHotfix: false
-            });
-          } else if (
-            schedule.cachedPublishedAt &&
-            isHotfixAvailable(CURRENT_VERSION, BUILD_TIME, schedule.cachedLatestVersion, schedule.cachedPublishedAt)
-          ) {
-            setNewVersionAvailable({
-              version: schedule.cachedLatestVersion,
-              url: schedule.cachedReleaseUrl,
-              isHotfix: true
-            });
-          }
-        }
-        return;
-      }
-
-      // Check online repository release
-      try {
-        const response = await fetch('https://api.github.com/repos/SuhaasNandeesh/devtools/releases/latest');
-        if (!response.ok) {
-          throw new Error(`GitHub API response error: ${response.status}`);
-        }
-        const data = await response.json();
-        const latestTag = data.tag_name;
-        const htmlUrl = data.html_url;
-        const publishedAt = data.published_at;
-
-        if (latestTag && htmlUrl) {
-          saveUpdateCheckCache(latestTag, htmlUrl, publishedAt);
-
-          if (isNewerVersion(CURRENT_VERSION, latestTag)) {
-            setNewVersionAvailable({
-              version: latestTag,
-              url: htmlUrl,
-              isHotfix: false
-            });
-          } else if (
-            publishedAt &&
-            isHotfixAvailable(CURRENT_VERSION, BUILD_TIME, latestTag, publishedAt)
-          ) {
-            setNewVersionAvailable({
-              version: latestTag,
-              url: htmlUrl,
-              isHotfix: true
-            });
-          }
-        }
-      } catch (err) {
-        console.error('Failed to run update check:', err);
-      }
-    };
-
-    // Delay checking by 3 seconds to ensure instant initial UI mounting
-    const timer = setTimeout(runUpdateCheck, 3000);
-    return () => clearTimeout(timer);
-  }, []);
-
   const isTouchDevice = typeof window !== 'undefined' && ('ontouchstart' in window || navigator.maxTouchPoints > 0);
 
-  // active tool reference
+  // Active tool reference
   const activeTool = TOOLS_CATALOG.find((t) => t.id === activeToolId) || TOOLS_CATALOG[3];
-
-  // Listener for keyboard global shortcuts (Cmd+K for search, Alt+V for clipboard)
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.code === 'KeyK') {
-        e.preventDefault();
-        setCommandPaletteOpen((prev) => !prev);
-      }
-      if (e.altKey && e.code === 'KeyV') {
-        e.preventDefault();
-        setClipboardDrawerOpen((prev) => !prev);
-      }
-      if (e.key === 'Escape') {
-        setCommandPaletteOpen(false);
-      }
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, []);
 
   // Set focus automatically when command palette opens
   useEffect(() => {
@@ -1216,135 +240,6 @@ export const App: React.FC = () => {
       setSearchQuery('');
     }
   }, [commandPaletteOpen]);
-
-  // Run the Smart Clipboard Scanner when window focuses
-  const runSmartClipboardScanner = async () => {
-    if (clipboardPermission !== 'granted') return;
-    
-    const text = await checkClipboardText();
-    if (!text || !text.trim() || text.length < 3) {
-      setSmartDetectedTool(null);
-      setDetectedText('');
-      return;
-    }
-
-    const trimmed = text.trim();
-    setDetectedText(trimmed);
-
-    // Rule 1: Detect UUID
-    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-    if (uuidRegex.test(trimmed)) {
-      setSmartDetectedTool(TOOLS_CATALOG.find((t) => t.id === 'regex-tester') || null); // Regex checker can verify format
-      return;
-    }
-
-    // Rule 2: Detect JSON
-    if (trimmed.startsWith('{') || trimmed.startsWith('[')) {
-      try {
-        JSON.parse(trimmed);
-        setSmartDetectedTool(TOOLS_CATALOG.find((t) => t.id === 'json-formatter') || null);
-        return;
-      } catch {
-        // Not valid JSON
-      }
-    }
-
-    // Rule 3: Detect Base64
-    const base64Regex = /^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/;
-    if (trimmed.length > 15 && base64Regex.test(trimmed)) {
-      setSmartDetectedTool(TOOLS_CATALOG.find((t) => t.id === 'base64-converter') || null);
-      return;
-    }
-
-    // Rule 4: Detect Unix timestamp
-    const epochRegex = /^\d{10}$|^\d{13}$/;
-    if (epochRegex.test(trimmed)) {
-      setSmartDetectedTool(TOOLS_CATALOG.find((t) => t.id === 'epoch-converter') || null);
-      return;
-    }
-
-    // Rule 5: Detect JWT Token
-    const jwtRegex = /^[a-zA-Z0-9\-_=]+\.[a-zA-Z0-9\-_=]+\.[a-zA-Z0-9\-_=]+$/;
-    if (jwtRegex.test(trimmed)) {
-      setSmartDetectedTool(TOOLS_CATALOG.find((t) => t.id === 'jwt-debugger') || null);
-      return;
-    }
-
-    // Rule 6: Detect IPv4 Subnet Calculator
-    const ipv4Regex = /^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
-    if (ipv4Regex.test(trimmed)) {
-      setSmartDetectedTool(TOOLS_CATALOG.find((t) => t.id === 'subnet-calculator') || null);
-      return;
-    }
-
-    // Rule 7: Detect raw SVG Markup
-    if (trimmed.startsWith('<svg') || (trimmed.startsWith('<?xml') && trimmed.includes('<svg'))) {
-      setSmartDetectedTool(TOOLS_CATALOG.find((t) => t.id === 'svg-optimizer') || null);
-      return;
-    }
-
-    // Rule 8: Detect special accented Unicode characters
-    const accentLettersRegex = /[áéíóúñüçßàèìòùâêîôûäëïöÿæœåøÁÉÍÓÚÑÜÇÀÈÌÒÙÂÊÎÔÛÄËÏÖŸÆŒÅØ]/;
-    if (accentLettersRegex.test(trimmed) && trimmed.length < 500) {
-      setSmartDetectedTool(TOOLS_CATALOG.find((t) => t.id === 'html-accents-encoder') || null);
-      return;
-    }
-
-    // Rule 9: Detect SQL statements
-    const sqlRegex = /^\s*(select|insert|update|delete|create|drop|alter|truncate)\b/i;
-    if (sqlRegex.test(trimmed)) {
-      setSmartDetectedTool(TOOLS_CATALOG.find((t) => t.id === 'sql-formatter') || null);
-      return;
-    }
-
-    // Rule 10: Detect Markdown headers/lists
-    const mdRegex = /^(?:#+\s+.+|-\s+.+|\*\s+.+)/m;
-    if (mdRegex.test(trimmed) && trimmed.length < 1000) {
-      setSmartDetectedTool(TOOLS_CATALOG.find((t) => t.id === 'markdown-previewer') || null);
-      return;
-    }
-
-    // Rule 11: Detect raw CSS rulesets
-    const cssRegex = /^\s*[\.#a-zA-Z0-9_\-\*]+\s*\{[^}]*\}/m;
-    if (cssRegex.test(trimmed) && trimmed.length < 1000) {
-      setSmartDetectedTool(TOOLS_CATALOG.find((t) => t.id === 'css-formatter') || null);
-      return;
-    }
-
-    // Rule 12: Detect Cron expression
-    const cronRegex = /^\s*(?:[0-5]?\d|\*|(?:\d+(?:-\d+)?(?:,\d+)*)(?:\/\d+)?)\s+(?:[0-2]?\d|\*|(?:\d+(?:-\d+)?(?:,\d+)*)(?:\/\d+)?)\s+(?:[0-3]?\d|\*|(?:\d+(?:-\d+)?(?:,\d+)*)(?:\/\d+)?)\s+(?:[1-9]|1[0-2]|\*|(?:\d+(?:-\d+)?(?:,\d+)*)(?:\/\d+)?)\s+(?:[0-7]|\*|(?:\d+(?:-\d+)?(?:,\d+)*)(?:\/\d+)?)\s*$/;
-    if (cronRegex.test(trimmed)) {
-      setSmartDetectedTool(TOOLS_CATALOG.find((t) => t.id === 'cron-descriptor') || null);
-      return;
-    }
-
-    // Rule 13: Detect URLs for QR Code
-    if (/^https?:\/\/[^\s/$.?#].[^\s]*$/i.test(trimmed) && trimmed.length < 150) {
-      setSmartDetectedTool(TOOLS_CATALOG.find((t) => t.id === 'qrcode-generator') || null);
-      return;
-    }
-
-    // Rule 14: Detect massive text block for Word Counter
-    if (trimmed.split(/\s+/).length > 80) {
-      setSmartDetectedTool(TOOLS_CATALOG.find((t) => t.id === 'word-counter') || null);
-      return;
-    }
-
-    // Rule 15: Detect Git Diff structures or edit outputs for Text Diff
-    if (trimmed.startsWith('diff --git') || (trimmed.includes('\n+') && trimmed.includes('\n-'))) {
-      setSmartDetectedTool(TOOLS_CATALOG.find((t) => t.id === 'text-diff') || null);
-      return;
-    }
-
-    setSmartDetectedTool(null);
-  };
-
-  useEffect(() => {
-    // Run scanner on focus
-    window.addEventListener('focus', runSmartClipboardScanner);
-    runSmartClipboardScanner(); // initial trigger
-    return () => window.removeEventListener('focus', runSmartClipboardScanner);
-  }, [clipboardPermission, activeToolId]);
 
   // Handle opt-in prompt decisions
   const handleOptInPrompt = async (allow: boolean) => {
@@ -1375,7 +270,6 @@ export const App: React.FC = () => {
 
   // Insert snippet callback
   const handleInsertSnippetIntoActiveTool = (text: string) => {
-    // Dynamically insert snippet using custom events or clipboard copies
     navigator.clipboard.writeText(text).then(() => {
       alert('Copied clip snippet. Paste it into the active input field!');
       setClipboardDrawerOpen(false);
@@ -1399,40 +293,40 @@ export const App: React.FC = () => {
         const opacityStyle = theme === 'light' ? 0.22 : 0.28;
         return (
           <>
-            <div 
-              className="glow-blob" 
-              style={{ 
-                top: '-10%', 
-                left: '-10%', 
-                width: '450px', 
-                height: '450px', 
-                background: colors.color1, 
+            <div
+              className="glow-blob"
+              style={{
+                top: '-10%',
+                left: '-10%',
+                width: '450px',
+                height: '450px',
+                background: colors.color1,
                 opacity: opacityStyle
-              }} 
+              }}
             />
-            <div 
-              className="glow-blob" 
-              style={{ 
-                bottom: '-15%', 
-                right: '-15%', 
-                width: '550px', 
-                height: '550px', 
-                background: colors.color2, 
+            <div
+              className="glow-blob"
+              style={{
+                bottom: '-15%',
+                right: '-15%',
+                width: '550px',
+                height: '550px',
+                background: colors.color2,
                 opacity: opacityStyle,
                 animationDelay: '-5s'
-              }} 
+              }}
             />
-            <div 
-              className="glow-blob" 
-              style={{ 
-                top: '35%', 
-                left: '45%', 
-                width: '380px', 
-                height: '380px', 
-                background: colors.color3, 
+            <div
+              className="glow-blob"
+              style={{
+                top: '35%',
+                left: '45%',
+                width: '380px',
+                height: '380px',
+                background: colors.color3,
                 opacity: opacityStyle,
                 animationDelay: '-12s'
-              }} 
+              }}
             />
           </>
         );
@@ -1486,11 +380,11 @@ export const App: React.FC = () => {
           }}
         >
           {!sidebarCollapsed && (
-            <div 
+            <div
               className="flex items-center gap-2 animate-fade"
               style={{ cursor: 'pointer' }}
               onClick={() => {
-                (window as any).playFeedbackSound?.('click');
+                playFeedbackSound('click');
                 setActiveToolId('dashboard-hub');
               }}
               title="Go to Dashboard Home"
@@ -1501,7 +395,7 @@ export const App: React.FC = () => {
               </span>
             </div>
           )}
-          
+
           <button
             onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
             className="glass-button glass-button-secondary"
@@ -1540,7 +434,7 @@ export const App: React.FC = () => {
                   <button
                     key={`fav-${tool.id}`}
                     onClick={() => {
-                      (window as any).playFeedbackSound?.('click');
+                      playFeedbackSound('click');
                       setActiveToolId(tool.id);
                     }}
                     className="glass-button w-full"
@@ -1559,10 +453,10 @@ export const App: React.FC = () => {
                       {!sidebarCollapsed && <span style={{ fontSize: '0.8rem', fontWeight: 600, wordBreak: 'break-word', whiteSpace: 'normal' }} className="animate-fade">{tool.name}</span>}
                     </div>
                     {!sidebarCollapsed && (
-                      <div 
-                        style={{ 
-                          display: 'flex', 
-                          alignItems: 'center', 
+                      <div
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
                           gap: '6px',
                           marginLeft: 'var(--space-2)',
                           flexShrink: 0
@@ -1653,7 +547,7 @@ export const App: React.FC = () => {
                   <button
                     key={tool.id}
                     onClick={() => {
-                      (window as any).playFeedbackSound?.('click');
+                      playFeedbackSound('click');
                       setActiveToolId(tool.id);
                     }}
                     className="glass-button w-full"
@@ -1704,11 +598,11 @@ export const App: React.FC = () => {
 
           {/* Platform Preferences Control (Startup Customizer) */}
           {!sidebarCollapsed && (
-            <div 
-              className="glass-panel" 
-              style={{ 
-                margin: 'var(--space-2) var(--space-3)', 
-                padding: 'var(--space-3)', 
+            <div
+              className="glass-panel"
+              style={{
+                margin: 'var(--space-2) var(--space-3)',
+                padding: 'var(--space-3)',
                 background: 'rgba(255,255,255,0.02)',
                 fontSize: '0.75rem',
                 display: 'flex',
@@ -1721,7 +615,7 @@ export const App: React.FC = () => {
               <div style={{ fontWeight: 700, color: 'var(--accent-primary)', textTransform: 'uppercase', fontSize: '0.6rem', letterSpacing: '0.05em', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <span>Theme & Audio Canvas</span>
               </div>
-              
+
               {/* Audio feedback toggle */}
               <div className="flex items-center justify-between">
                 <span style={{ color: 'var(--text-secondary)' }}>Audio Feedback</span>
@@ -1729,19 +623,18 @@ export const App: React.FC = () => {
                   onClick={() => {
                     const nextMuted = !audioMuted;
                     setAudioMuted(nextMuted);
-                    // Play dynamic confirmation sound when unmuting!
                     if (!nextMuted) {
                       setTimeout(() => {
-                        (window as any).playFeedbackSound?.('success');
+                        playFeedbackSound('success');
                       }, 50);
                     } else {
-                      (window as any).playFeedbackSound?.('click');
+                      playFeedbackSound('click');
                     }
                   }}
                   className="glass-button glass-button-secondary"
-                  style={{ 
-                    padding: '2px 8px', 
-                    fontSize: '0.7rem', 
+                  style={{
+                    padding: '2px 8px',
+                    fontSize: '0.7rem',
                     borderRadius: 'var(--radius-sm)',
                     borderColor: audioMuted ? 'var(--border-primary)' : 'var(--accent-primary)',
                     background: audioMuted ? 'transparent' : 'var(--accent-glow)',
@@ -1764,7 +657,7 @@ export const App: React.FC = () => {
                   onChange={(e) => {
                     setBgTheme(e.target.value);
                     setTimeout(() => {
-                      (window as any).playFeedbackSound?.('click');
+                      playFeedbackSound('click');
                     }, 20);
                   }}
                   style={{
@@ -1807,12 +700,12 @@ export const App: React.FC = () => {
               </div>
               <div>{isMac ? '⌥+V Clips' : 'Alt+V Clips'}</div>
             </div>
-            <div 
-              style={{ 
-                fontSize: '0.6rem', 
-                color: 'var(--text-muted)', 
+            <div
+              style={{
+                fontSize: '0.6rem',
+                color: 'var(--text-muted)',
                 opacity: 0.6,
-                textAlign: 'center', 
+                textAlign: 'center',
                 marginTop: '2px',
                 letterSpacing: '0.05em'
               }}
@@ -1950,14 +843,14 @@ export const App: React.FC = () => {
                 setAudioMuted(nextMuted);
                 if (!nextMuted) {
                   setTimeout(() => {
-                    (window as any).playFeedbackSound?.('success');
+                    playFeedbackSound('success');
                   }, 50);
                 } else {
-                  (window as any).playFeedbackSound?.('click');
+                  playFeedbackSound('click');
                 }
               }}
               className="glass-button glass-button-secondary"
-              style={{ 
+              style={{
                 padding: 'var(--space-2)',
                 borderColor: audioMuted ? 'var(--border-primary)' : 'var(--accent-primary)',
                 color: audioMuted ? 'var(--text-muted)' : 'var(--accent-primary)'
@@ -1980,7 +873,7 @@ export const App: React.FC = () => {
         {/* Dynamic Tool Workspace Router Viewport */}
         <main style={{ flex: 1, minHeight: 0, overflow: 'hidden' }}>
           {activeToolId === 'dashboard-hub' ? (
-            <DashboardHub 
+            <DashboardHub
               onSelectTool={setActiveToolId}
               favourites={favourites}
               toggleFavourite={toggleFavourite}
@@ -2166,9 +1059,9 @@ export const App: React.FC = () => {
               <Sparkles size={24} style={{ color: 'var(--accent-primary)' }} />
               <h2 style={{ fontSize: '1.25rem', fontWeight: 700 }}>Enable Smart Capabilities?</h2>
             </div>
-            
+
             <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
-              Enable clipboard history indexing and background auto-detect utilities. 
+              Enable clipboard history indexing and background auto-detect utilities.
               This allows DevTools to:
             </p>
             <ul style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', paddingLeft: 'var(--space-4)', display: 'flex', flexDirection: 'column', gap: '4px' }}>
@@ -2225,8 +1118,7 @@ export const App: React.FC = () => {
               onClick={() => {
                 setActiveToolId(smartDetectedTool.id);
                 setSmartDetectedTool(null);
-                
-                // Write code trigger: search if there are textareas to auto-inject in 100ms
+
                 setTimeout(() => {
                   const ta = document.querySelector('textarea');
                   if (ta) {
@@ -2235,7 +1127,6 @@ export const App: React.FC = () => {
                     ta.dispatchEvent(new Event('input', { bubbles: true }));
                   }
                 }, 100);
-
               }}
               className="glass-button"
               style={{ padding: 'var(--space-1) var(--space-3)', fontSize: '0.75rem', gap: '4px' }}
@@ -2253,7 +1144,6 @@ export const App: React.FC = () => {
           </div>
         </div>
       )}
-
     </div>
   );
 };

@@ -147,11 +147,23 @@ npx vitest --ui
 
 ---
 
-## 🏗️ Technical Architecture
+## 🏗️ Technical Architecture & Directory Design
 
-- **Core Framework**: React 19 & TypeScript.
-- **Styling System**: Vanilla CSS with interactive HSL-based palettes, responsive container queries, glassmorphism filters, and smooth micro-animations.
-- **Asset Integration**: Vite 8 & `vite-plugin-singlefile` to ensure absolute self-containment for the offline-first mandate.
+The platform uses a highly decoupled, modular clean-architecture structure:
+
+- **Routing & Shell Layouts**: [src/App.tsx](file:///Users/suhaasnandeesh/Code/ai-app/devtools/src/App.tsx) operates as a streamlined layout router encapsulating global preference wrappers and modal overlays.
+- **Visual View Components**: [src/components/DashboardHub.tsx](file:///Users/suhaasnandeesh/Code/ai-app/devtools/src/components/DashboardHub.tsx) handles main categories display, query inputs, and cards collection launcher.
+- **Standalone Custom Hooks**: Bounded hooks inside `src/hooks/` encapsulate complex asynchronous and OS events:
+  - `useCursorFollower.ts`: Capture physics of GPU-accelerated cursor halo overlays.
+  - `useSmartClipboard.ts`: Match regex text bindings for instant utility suggestions.
+  - `useUpdateChecker.ts`: Background GitHub Release API sync caching for 12 hours.
+  - `useGlobalHotkeys.ts`: Keyboard event listener mapping Cmd+K and Alt+V panels.
+- **Shared Data & Utilities Configuration**:
+  - [src/utils/toolsCatalog.ts](file:///Users/suhaasnandeesh/Code/ai-app/devtools/src/utils/toolsCatalog.ts): Centralized catalog list indexing metadata and imports for all 45+ interactive tool components.
+  - [src/utils/iconHelper.tsx](file:///Users/suhaasnandeesh/Code/ai-app/devtools/src/utils/iconHelper.tsx): Highly optimized, tree-shakeable Lucide React icon switcher.
+  - [src/utils/audioFeedback.ts](file:///Users/suhaasnandeesh/Code/ai-app/devtools/src/utils/audioFeedback.ts): Web Audio synthesized click and success confirmers persistent mute locker.
+  - [src/utils/engines.ts](file:///Users/suhaasnandeesh/Code/ai-app/devtools/src/utils/engines.ts): Core stateless computation and calculation engines.
+- **Asset Integration**: Vite 8 & `vite-plugin-singlefile` ensuring 100% self-containment for the offline-first mandate, compiling resources directly into a standalone `dist/index.html` file.
 - **Icons**: Lucide React.
 
 ---

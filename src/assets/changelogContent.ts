@@ -1,8 +1,17 @@
-export const CURRENT_VERSION = '1.5.5';
+export const CURRENT_VERSION = '1.6.0';
 
 export const changelogContent: Record<string, string> = {
+  '1.6.0': `
+## v1.6.0 (Latest Release) — Architectural Modularization Refactoring 🏗️
+*   **Monolithic Decoupling**: Re-architected and refactored the monolithic 83KB \`src/App.tsx\` file, shrinking it by **63%** (from 2,260 lines to 844 lines) to improve compile times, tree-shaking efficacy, and long-term codebase maintainability.
+*   **Static Configurations Separation**: Extracted the massive 45+ tool listings array (\`TOOLS_CATALOG\`) and types into a highly cohesive \`src/utils/toolsCatalog.ts\` configuration module.
+*   **Tree-Shakeable Vector Mappings**: Isolated physical Lucide React icon switcher hooks into \`src/utils/iconHelper.tsx\`.
+*   **Encapsulated Audio Synthesizer**: Extracted the Web Audio client clicks and successes feedback generators into a decoupled \`src/utils/audioFeedback.ts\` utility, ensuring zero global scope regressions.
+*   **Subcomponents View**: Moved the main categories dashboard into \`src/components/DashboardHub.tsx\`.
+*   **Standalone Custom Hooks**: Created four custom hooks inside \`src/hooks/\` (\`useCursorFollower\`, \`useSmartClipboard\`, \`useUpdateChecker\`, \`useGlobalHotkeys\`) to encapsulate complex browser events and state transitions.
+  `,
   '1.5.5': `
-## v1.5.5 (Latest Release) — Same-Version Hotfix Notifications 🚀
+## v1.5.5 — Same-Version Hotfix Notifications 🚀
 *   **Same-Version Hotfix Notifications**: You will now be automatically notified of newer hotfix releases even when the version numbers match. The update checker dynamically compares your local compile timestamp with the latest online published release timestamp.
 *   **Specialized Hotfix Toast**: Renders a dedicated hotfix toast ("New DevTools Hotfix Available!") detailing that a newer hotfix revision has been published on GitHub.
 *   **Session-Safe published_at Cache**: Stores the latest online publish timestamp in sessionStorage to conserve API queries.
@@ -89,6 +98,8 @@ export function getFullChangelogText(): string {
 
 Welcome to the offline release notes. Here you can explore recent feature additions, fixes, and updates.
 
+---
+${changelogContent['1.6.0']}
 ---
 ${changelogContent['1.5.5']}
 ---
