@@ -125,3 +125,15 @@ This log documents crucial architectural pivots, engineering constraints, edge c
     2.  **Markdown Exporter**: Designed a local file downloader using client-side `Blob` and `URL.createObjectURL`. It packages user compose data (title, description, diagnostic system parameters) into a beautiful, structured Markdown file (`devtools-feedback-[type]-[timestamp].md`) streamed directly to their local system offline.
     3.  **Secure GitHub Bridge URL Compiler**: Created an online bridge using a direct, URL-encoded GitHub new issue template link (`window.open`). It packages title, labels, and the formatted Markdown diagnostic report into URL parameters. This triggers a secure new browser tab opening where users can review and submit the issue using their own logged-in GitHub account, requiring zero background network queries from the offline app itself.
     4.  **Tree-Shakeable Vector Paths**: Substituted brand-specific unexported SVG icons with standard web-safe Lucide vectors (`Globe` representing the external bridge link) to guarantee compile compatibility and keep single-file bundles under 550kB.
+
+---
+
+## 14. Automated Single-File Asset Release Publishing Workflow (May 2026)
+*   **Problem**: Ensuring consistent, reliable, and secure deployment of new offline releases directly to GitHub Releases with matching compiled offline zip assets attached, while preserving airtight cryptographic privacy.
+*   **Resolution**: Established a standardized **6-Step Release Protocol**:
+    1.  **Build Verification**: Execute `npm run build` to compile TypeScript components and inline all assets (CSS, SVGs, scripts) into the single-file `dist/index.html` bundle.
+    2.  **Asset Compression**: Compress `dist/index.html` into the root-level archive `devtools-offline-bundle.zip` via `zip -j devtools-offline-bundle.zip dist/index.html`.
+    3.  **Local Test Suite Validation**: Execute `npx vitest run` to verify that all 84 test paths remain strictly correct.
+    4.  **Source & Tag Version Control**: Stage all items, commit (`git commit -m ...`), push to `main` branch on remote, tag the new release (`git tag vX.Y.Z`), and push the tag to origin (`git push origin vX.Y.Z`).
+    5.  **GitHub REST API Release Compiler**: Execute a Node.js compiler script (`node scratch/publish_vX_Y_Z.js`) that uses the secure GitHub Personal Access Token to programmatically call the GitHub Releases endpoint (`POST /repos/SuhaasNandeesh/devtools/releases`), create the release details with markdown notes, and stream upload the zip file directly to the release's `upload_url`.
+    6.  **Zero Trust Sanitization**: Immediately overwrite the publishing script on disk with a sanitized security placeholder to prevent active API credentials from lingering in cleartext.
