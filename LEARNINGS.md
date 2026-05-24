@@ -130,13 +130,16 @@ This log documents crucial architectural pivots, engineering constraints, edge c
 
 ## 14. Automated Single-File Asset Release Publishing Workflow (May 2026)
 *   **Problem**: Ensuring consistent, reliable, and secure deployment of new offline releases directly to GitHub Releases with matching compiled offline zip assets attached, while preserving airtight cryptographic privacy.
-*   **Resolution**: Established a standardized **6-Step Release Protocol**:
+*   **Resolution**: Established a highly optimized, fast **6-Step Release Protocol**:
     1.  **Build Verification**: Execute `npm run build` to compile TypeScript components and inline all assets (CSS, SVGs, scripts) into the single-file `dist/index.html` bundle.
     2.  **Asset Compression**: Compress `dist/index.html` into the root-level archive `devtools-offline-bundle.zip` via `zip -j devtools-offline-bundle.zip dist/index.html`.
-    3.  **Local Test Suite Validation**: Execute `npx vitest run` to verify that all 84 test paths remain strictly correct.
+    3.  **Local Test Suite Validation**: Execute `npx vitest run` to verify that all 101 test paths remain strictly correct.
     4.  **Source & Tag Version Control**: Stage all items, commit (`git commit -m ...`), push to `main` branch on remote, tag the new release (`git tag vX.Y.Z`), and push the tag to origin (`git push origin vX.Y.Z`).
-    5.  **GitHub REST API Release Compiler**: Execute a Node.js compiler script (`node scratch/publish_vX_Y_Z.js`) that uses the secure GitHub Personal Access Token to programmatically call the GitHub Releases endpoint (`POST /repos/SuhaasNandeesh/devtools/releases`), create the release details with markdown notes, and stream upload the zip file directly to the release's `upload_url`.
-    6.  **Zero Trust Sanitization**: Immediately overwrite the publishing script on disk with a sanitized security placeholder to prevent active API credentials from lingering in cleartext.
+    5.  **GitHub REST API Release Compiler**:
+        *   **Fast Token Retrieval**: Do NOT query the macOS raw keychain (`security`) or search shell configs/env variables. Instead, run `echo "url=https://github.com/SuhaasNandeesh/devtools.git" | git credential fill` to instantly query the active Git credential helper (`osxkeychain`) and extract the token.
+        *   **CommonJS Compatibility**: Because the workspace `package.json` contains `"type": "module"`, standard `.js` files are treated as ES modules. To avoid ESM `require()` syntax errors, write the publishing script as a CommonJS script with a `.cjs` extension (`scratch/publish_vX_Y_Z.cjs`) and execute it via `node scratch/publish_vX_Y_Z.cjs`.
+        *   The script calls the GitHub Releases endpoint (`POST /repos/SuhaasNandeesh/devtools/releases`), parses the response `upload_url`, and streams the ZIP file directly to it.
+    6.  **Zero Trust Sanitization**: Immediately overwrite the `.cjs` script on disk with a sanitized security placeholder to prevent active API credentials from lingering in cleartext. Commit and push the placeholder.
 
 ---
 
