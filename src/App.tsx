@@ -920,6 +920,13 @@ export const App: React.FC = () => {
     localStorage.setItem('devtools_bg_theme', bgTheme);
   }, [bgTheme]);
 
+  useEffect(() => {
+    if (typeof localStorage !== 'undefined') {
+      localStorage.setItem('devtools_audio_muted', audioMuted ? 'true' : 'false');
+    }
+    audioMutedGlobal = audioMuted;
+  }, [audioMuted]);
+
   // Navigation states
   const [activeToolId, setActiveToolId] = useState('dashboard-hub');
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
